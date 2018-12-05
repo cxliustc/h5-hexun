@@ -18,7 +18,6 @@ import {sync} from 'vuex-router-sync';
 import 'vux/src/styles/reset.less';
 import '../common/index.less';
 import '../assets/icon/iconfont.css';
-
 export let Router = null;
 
 Vue.use(Vuex);
