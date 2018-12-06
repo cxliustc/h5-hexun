@@ -1,28 +1,14 @@
 <template>
-    <div class="wrapper" v-cloak id="infoDetailBox">
+    <div class="wrapper overflowH" v-cloak id="infoDetailBox">
+        <div class="mainMask">
+            <p>提示:本内容由百联大宗提供,请验证手机号后获取全文</p>
+        </div>
         <div class='title'>{{infoDetail.title}}</div>
         <div class="content">
             <div class="authorInfo">
-                <!-- 有头像 -->
-                <div class='author_like' v-if="(infoDetail.roleCode === 'R10' || infoDetail.roleCode === 'R21')"  >
-                    <div class="paddTop" :class='{"author_affiliation iosStyleBorder": isIos, "author_affiliation": !isIos}' >
-                        <div>
-                            <img v-if='infoDetail.authorImageUrl !== null' :src="infoDetail.authorImageUrl|imgSrc" :onerror="errorImg" class='headPortrait'  alt="" />
-                            <img v-if='infoDetail.authorImageUrl === null && infoDetail.roleCode === "R10"' src="../../assets/images/author-default.png" class='headPortrait'  alt="" />
-                            <img v-if='infoDetail.authorImageUrl === null && infoDetail.roleCode === "R21"' src="../../assets/images/company-icon.png" class='headPortrait' alt="" />
-                            <span  class='author_name' >{{infoDetail.authorName|strLimit(6)}}</span>
-                            <!-- <span v-if="infoDetail.topLevel !== null" class='author_name' ><span>{{(infoAttention.openEmployee.nickName || infoAttention.openEmployee.empName || infoAttention.openEmployee.empCode)|strLimit(6)}}</span></span> -->
-                            <span class='author_time'>{{infoDetail.releaseDate|translateDate}}</span>
-                            <span v-if="infoDetail.isShowOrigin === '0'" class='copyright_logo'>原创</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- 没有头像 -->
-                <div v-if="infoDetail.roleCode !== 'R10' && infoDetail.roleCode !== 'R21'">
-                    <!-- <span v-if="infoDetail.topLevel !== null" class='author_name' ><span>{{(infoAttention.openEmployee.nickName || infoAttention.openEmployee.empName || infoAttention.openEmployee.empCode)|strLimit(6)}}</span></span> -->
+                <div>
                     <span  class='author_name' >{{infoDetail.authorName|strLimit(6)}}</span>&nbsp;
                     <span class='author_time'>{{infoDetail.releaseDate|translateDate}}</span>
-                    <span v-if="infoDetail.isShowOrigin === '0'" class='copyright_logo'>原创</span>
                 </div>
                 <div v-if='infoDetail.channelName === "研报"'>
                     <a v-for='(item, index) in infoDetail.cmsInfoAttRes' :key="index" class='pdfLogo' id='pdfLogo' href='javascript:;' download='' @click='showPDF(item.attachmentName, item.attachmentPath)'>
@@ -69,13 +55,13 @@
             <!-- 研报图表 -->
             <div class="chart-div" v-show='infoDetail.cmsInfoData && infoDetail.cmsInfoData.showChart === "1"'>
                 <p>{{infoDetail.cmsInfoData ? infoDetail.cmsInfoData.chartTitle : ''}}</p>
-                <!-- <chart id="canvas" :options="polar"></chart> -->
+                <chart id="canvas" :options="polar" :auto-resize = true></chart>
             </div>
             <div class="infoContent">
                 <span class='infoContent-html' :class="{'isIosG':isIos}" v-html="delBrInData(infoDetail.texHtml)"></span>
-                <div>
+                <!-- <div>
                     <span v-for='(item, index) in infoDetail.tagList' :key='index' class='appreciate'>{{item.tagName}}</span>
-                </div>                    
+                </div>                     -->
                 <span class='declare' v-if="infoDetail.isShowOrigin === '1'">来源：{{infoDetail.ext2}}</span>
                 <span class='declare' v-if="infoDetail.isShowDisclaimer === '1'">免责声明：本文非百联大宗原创，以上仅代表作者个人观点</span>
                 <span class='declare' v-if="infoDetail.isShowCopyright === '1'">版权声明：如需转载，请注明来自“百联大宗”</span>
@@ -90,16 +76,31 @@
                     <ul>
                         <li v-for="(item, index) in infoRecommendation" :key="index" @click='gotoRecommendation(item.infoId)'>
                             <a href="">
-                                <p class='recommendationTitle' :class="[{'recommendationTitle': item.cmsInfoAttList !== null && item.cmsInfoAttList.length >=3},{'recommendationTitle1': item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3}]">{{item.title|strLimit(30)}}</p>
-                                <img class='dantu' v-if='item.cmsInfoAttList && item.cmsInfoAttList.length !==0 && item.cmsInfoAttList.length <3 && !item.cmsInfoAttList[0].includes(".pdf")' :src='item.cmsInfoAttList[0]'/>
-                                <div class="santu" v-if='item.cmsInfoAttList && item.cmsInfoAttList.length >=3'>
-                                    <img v-if='!item.cmsInfoAttList[0].includes(".pdf")' :src="item.cmsInfoAttList[0]" alt="">
-                                    <img v-if='!item.cmsInfoAttList[1].includes(".pdf")' :src="item.cmsInfoAttList[1]" alt="">
-                                    <img v-if='!item.cmsInfoAttList[2].includes(".pdf")' :src="item.cmsInfoAttList[2]" alt="">
+                                <!-- 单图 -->
+                                <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3">
+                                    <div class="left releative oneJpgLeft">
+                                        <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(30)}}</p>
+                                        <div class='subscript subscript1'>
+                                            <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
+                                            <span class='right'>{{item.releaseDate|translateDate}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <img class='dantu' v-if='item.cmsInfoAttList && item.cmsInfoAttList.length !==0 && !item.cmsInfoAttList[0].includes(".pdf")' :src='item.cmsInfoAttList[0]'/>
+                                    </div>
                                 </div>
-                                <div class='subscript'>
-                                    <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
-                                    <span class='left'>{{item.releaseDate|translateDate}}</span>
+                                <!-- 三图 -->
+                                <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length >=3">
+                                    <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
+                                    <div class="santu clearfix">
+                                        <img v-if='!item.cmsInfoAttList[0].includes(".pdf")' :src="item.cmsInfoAttList[0]" alt="">
+                                        <img v-if='!item.cmsInfoAttList[1].includes(".pdf")' :src="item.cmsInfoAttList[1]" alt="">
+                                        <img v-if='!item.cmsInfoAttList[2].includes(".pdf")' :src="item.cmsInfoAttList[2]" alt="">
+                                    </div>
+                                    <div class='subscript subscript2'>
+                                        <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
+                                        <span class='right'>{{item.releaseDate|translateDate}}</span>
+                                    </div>
                                 </div>
                             </a>
                         </li>
@@ -112,6 +113,7 @@
 <script>
 import apis from '@/apps/APP/apis';
 import {getTime} from 'UTILS/utils';
+import chart from 'vue-echarts';
 export default {
     name: 'infodetail',
     data () {
@@ -119,18 +121,118 @@ export default {
             infoDetail: {}, // 详情数据
             infoRecommendation: {}, // 相关推荐数据
             isIos: false, // 是否是ios
-            errorImg: import('../../assets/images/user-default-blue.png')
+            errorImg: import('../../assets/images/user-default-blue.png'),
+            polar: {// 研报图表配置
+                tooltip: {
+                    trigger: 'item',
+                    showDelay: 0,
+                    formatter: function (params) {
+                        if (params.value.length > 1) {
+                            return params.seriesName + ' :<br/>' + '数量：' + params.value[0] + '个 <br/>' + '价格：' + params.value[1] + '元 ';
+                        }
+                    },
+                    textStyle: {
+                        fontSize: 12
+                    }
+                },
+                grid: {
+                    left: '2%',
+                    right: '5%',
+                    containLabel: true
+                },
+                textStyle: {
+                    fontSize: 12
+                },
+                legend: {
+                    data: ['买', '卖      数量：个'],
+                    x: 'center',
+                    y: 'bottom',
+                    textStyle: {
+                        fontSize: 12
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'value',
+                        scale: true,
+                        fontSize: 12,
+                        minInterval: 1,
+                        min: 0,
+                        axisLabel: {
+                            textStyle: {
+                                fontSize: 12
+                            },
+                            formatter: function (value, index) {
+                                if (parseInt(value) !== value) {
+                                    return '';
+                                }
+                                return parseInt(value);
+                            }
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value}',
+                            textStyle: {
+                                fontSize: 12
+                            }
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '买',
+                        type: 'scatter',
+                        color: '#95d3ff',
+                        label: {
+                            normal: {
+                                color: '#000000',
+                                show: true,
+                                position: 'top',
+                                fontSize: 12
+                            }
+                        },
+                        data: []
+                    },
+                    {
+                        name: '卖      数量：个',
+                        color: '#f55b5b',
+                        type: 'scatter',
+                        label: {
+                            normal: {
+                                color: '#000000',
+                                show: true,
+                                position: 'top',
+                                fontSize: 12
+                            }
+                        },
+                        data: []
+                    }
+                ]
+            }
         };
+    },
+    components: {
+        chart
     },
     created () {
         // 资讯详情数据拿取
         let params = {
             informationId: this.$route.params.informationId || '',
-            cacheId: this.$route.params.informationId || ''};
+            cacheId: this.$route.params.informationId || '',
+            refresh: true};
         apis.info.getInfoDetailData(params).then((data) => {
             data = data.body;
             if (data.success) {
                 this.infoDetail = data.data;
+                // 图表数据处理
+                if (this.infoDetail.cmsInfoData) {
+                    this.getChartdata(this.infoDetail.cmsInfoData.chartContent);
+                }
                 // 相关推荐数据拿取
                 let paramsRecommend = {
                     categoryLevel1Id: this.infoDetail.categoryLevel1Id,
@@ -138,18 +240,25 @@ export default {
                     categoryLevel3Id: this.infoDetail.categoryLevel3Id,
                     channelCode: this.infoDetail.channelCode,
                     infoId: this.infoDetail.infoId,
-                    cacheId: this.infoDetail.infoId
+                    cacheId: this.infoDetail.infoId,
+                    refresh: true
                 };
                 apis.info.getInfoDetailRecommendData(paramsRecommend).then((data) => {
                     data = data.body;
                     if (data.success) {
-                        this.infoRecommendation = data.data;
+                        this.infoRecommendation = data.data.length > 3 ? data.data.slice(0, 3) : data.data;
                     }
                 });
             }
         });
         // 判断ios，android
         this.getMobilesType();
+        // 图表字体设置
+        this.setPolarFontSize();
+    },
+    mounted () {
+        // var myChart=$("#myChart");
+        // myChart.style.width=window.innerWidth+'px';
     },
     methods: {
         // 判断ios，android
@@ -211,6 +320,42 @@ export default {
         // 表格数据时间处理
         getUpdateTime (time) {
             return getTime(time);
+        },
+        // 图表字体设置
+        setPolarFontSize () {
+            let fontSize = parseFloat(window.getComputedStyle(document.documentElement)['fontSize']) / 100;
+            this.polar.tooltip.textStyle.fontSize = 12 * fontSize;
+            this.polar.xAxis[0].axisLabel.textStyle.fontSize = 12 * fontSize;
+            this.polar.yAxis[0].axisLabel.textStyle.fontSize = 12 * fontSize;
+            this.polar.series[0].label.normal.fontSize = 12 * fontSize;
+            this.polar.series[1].label.normal.fontSize = 12 * fontSize;
+            this.polar.legend.textStyle.fontSize = 12 * fontSize;
+            // this.polar.xAxis[0].nameTextStyle.fontSize = 12 * fontSize
+        },
+        // 图表数据处理
+        getChartdata (data) {
+            if (!!data && data !== '{}') {
+                let sellData = [];
+                let buyData = [];
+                JSON.parse(data).sell.map((el, ind) => {
+                    if (el.quantity === 0 || el.quantity === null) {
+                        return false;
+                    } else {
+                        sellData.push([el.quantity, el.price]);
+                        this.polar.series[1].data = sellData;
+                    }
+                });
+                JSON.parse(data).buy.map((el, ind) => {
+                    if (el.quantity === 0 || el.quantity === null) {
+                        return false;
+                    } else {
+                        buyData.push([el.quantity, el.price]);
+                        this.polar.series[0].data = buyData;
+                    }
+                });
+                console.log(this.polar.series[1].data);
+                console.log(this.polar.series[0].data);
+            }
         }
     }
 };
@@ -219,27 +364,34 @@ export default {
 .clear {
     clear: both;
 }
+.releative{
+    position: relative;
+}
 [v-cloak] {
     display: none;
 }
 .paddTop{
     padding-top: 16px;
 }
+.overflowH{
+    overflow: hidden!important;
+}
 #infoDetailBox {
     height:100%;
     overflow: scroll;
     overflow-x: hidden;
-    // margin-top: 51px;
     -webkit-text-size-adjust: none;
     -webkit-overflow-scrolling: touch;
     background:#F2F2F2;
-    // padding: 0 16px;
+    // .mainMask{
+
+    // }
     .headPortrait {
         border: 0.5px solid #E5E5E5;
     }
     img {
         max-width: 100%;
-        // height: auto;
+
         border: 0;
         display: block;
         margin:0 auto;
@@ -256,7 +408,7 @@ export default {
         width: 100%;
         font-size: 24px;
         line-height:35px;
-        padding: 20px 16px 12px;
+        padding: 14px 15px 5px;
         background:#fff;
     }
     .content {
@@ -267,7 +419,7 @@ export default {
             pointer-events: none;
         }
         .authorInfo {
-            padding:0 16px;
+            padding:0 15px;
             background:#fff;
             .copyright_logo {
                 display: inline-block;
@@ -300,7 +452,7 @@ export default {
                 letter-spacing: 0.35px;
                 line-height: 17px;
                 display: inline-block;
-                color: #45b2ff;
+                color: #999;
                 height: 17px;
                 font-size: 12px;
                 vertical-align: middle;
@@ -341,9 +493,9 @@ export default {
                 position: relative;
                 margin-top: 28px;
                 padding-bottom: 30px;
-                font-size: 14px;
+                font-size: 18px;
                 color:#393939;
-                line-height: 24px;
+                line-height: 32.4px;
                 .guideContent {
                     .guide_logo{
                         font-weight: bold
@@ -416,8 +568,8 @@ export default {
             color: #424242;
             // width: 360px;
             width: 100%;
-            padding:0 16px;
-            padding-top: 6px;
+            padding:0 15px;
+            padding-top: 11px;
             box-sizing: border-box;
             background:#fff;
             // border-bottom: 1px solid #e8e8e8;
@@ -425,6 +577,8 @@ export default {
                 display: block;
                 color: #a1a1a1;
                 font-size: 12px;
+                margin-top:10px;
+                padding-bottom:15px;
             }
             div {
                 padding-bottom: 18px;
@@ -432,9 +586,8 @@ export default {
             .infoContent-html {
                 display: block;
                 // width: 350px;
-                font-size: 14px !important;
+                font-size: 18px !important;
                 color: #393939;
-                margin-top: 14px;
                 line-height: 24px;
                 letter-spacing: 1.3px;
                 img {
@@ -447,7 +600,7 @@ export default {
                 }
                 p {
                     // line-height: normal !important;
-                    line-height: 26px !important;
+                    line-height: 32.4px !important;
                     margin-bottom: 20px!important;
                     span {
                         font-size:0.17rem!important;
@@ -464,7 +617,7 @@ export default {
             }
             .isIosG {
                 *{
-                    font-size: 16px !important;
+                    font-size: 18px !important;
                 }
             }
             .appreciate {
@@ -746,295 +899,69 @@ export default {
             }
             .recommendationContent {
                 clear: both;
-                padding:0 16px;
+                padding:0 15px;
+                text-align: left;
                 background:#fff;
                 ul {
+                    padding-bottom:10px;
                     li {
                         position: relative;
-                        padding: 16px 0 13px 0;
+                        padding: 11px 0 15px 0;
                         border-bottom: 1px solid #f3f3f3;
                         clear: both;
-                        height: 90px;
+                        height: auto;
                         overflow-x:hidden;
+                        clear: both;
                         .santu{
                             clear: both;
-                            width:4rem;
+                            width:100%;
+                            margin-top:14px;
                             img{
                                 float: left;
+                                margin-left:4.5px;
                             }
                             img:nth-child(1) {
                                 margin-left: 0;
                             }
                         }
+                        .oneJpgLeft{
+                            height:74px;
+                            width:auto;
+                        }
                         .recommendationTitle {
                             width: 100%;
                             display: inline-block;
-                            font-size: 14px;
+                            font-size: 16px;
                             color: #393939;
-                            // width: 349px;
-                            // height: 44px;
-                            // margin-left: 10px;
-                             margin-bottom: 15px;
                              line-height: 24px;
                         }
                         .recommendationTitle1 {
                             display: inline-block;
                             vertical-align: top;
-                            font-size: 14px;
+                            font-size: 17px;
                             color: #393939;
-                            width: 200px;
+                            width: 220px;
                             margin-left: 0;
                         }
                         .subscript {
-                            // margin-top: 10px;
-                            position: relative;
-                            margin-top: 30px;
-                            // margin-left: 10px;
-                            // width: 355px;
+                            width: 100%;
                             color: #939393;
                             font-size: 12px;
                             height: 17px;
                         }
                         .subscript1 {
-                            display: inline-block;
                             position: absolute;
-                            top: 68px;
-                            // left: 10px;
-                            left: 0;
-                            width: 235px;
-                            color: #939393;
-                            font-size: 12px;
-                            height: 17px;
+                            bottom:0;
                         }
-                        .dantu{
-                            margin-top:10px;
+                        .subscript2 {
+                            margin-top:15px;
                         }
                         img {
                             display: inline-block;
-                            margin-top:10px;
-                            width: 110px;
-                            height: 69px;
+                            width: 112px;
+                            height: 74px;
                             vertical-align: top;
-                            margin-right: 10px;
-                            border-radius: 8px;
-                        }
-                    }
-                }
-            }
-            .comment_area {
-                padding:0 16px;
-                background:#fff;
-                margin-top: 8px;
-                padding-top:10px;
-                padding-bottom:60px;
-                .toComment{
-                    margin-top:20px; 
-                    font-size: 14px;
-                }
-                .noComment {
-                    // height: 111px;
-                    // border-bottom: 1px solid #DBDBDB;
-                    width: 100%;
-                    position: relative;
-                    div {
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%,-50%);
-                        img {
-                            width: 110px;
-                            height: 102.3px;
-                            display: block;
-                            margin: 0 auto;
-                        }
-                        span {
-                            font-size: 14px;
-                            color: #BBB;
-                            display: block;
-                            margin-top: 24.7px;
-                            width: 240px;
-                        }
-                        a {
-                            display: block;
-                            margin: 0 auto;
-                            margin-top: 24px;
-                            font-size: 12px;
-                            color: #21a3ff;
-                            width: 83px;
-                            height: 30px;
-                            border: 1px solid #21A3FF;
-                            border-radius: 8px;
-                            line-height: 30px;
-                            text-align: center;
-
-                        }
-                    }
-                }
-                p {
-                    display: inline-block;
-                    float: right;
-                    margin-right: 17px;
-                    img {
-                        display: inline-block;
-                        vertical-align: middle;
-                        margin-left: 9px;
-                    }
-                    .writeComment {
-                        width: 15px;
-                        height: 15px;
-                    }
-                    .viewComment {
-                        width: 20px;
-                        height: 20px;
-                    }
-                    p {
-                        display: inline-block;
-                        vertical-align: middle;
-                        margin-right: 14px;
-                        margin-left: 8px;
-                        font-size: 14px;
-                    }
-                }
-                div {
-                    // padding: 0 0 0 10px;
-                    font-size: 17px;
-                    color: #393939;
-                    // line-height: 50%;
-                    span {
-                        display: inline-block;
-                        height: 20px;
-                        line-height: 20px;
-                        .colorMark {
-                            display: inline-block;
-                            width: 5px;
-                            height: 14px;
-                            background-color: #21a3ff;
-                            margin-right: 10px;
-                        }
-                        .modelName{
-                            font-size: 16px;
-                        }
-                    }
-                    .moreComment {
-                        font-size: 12px;
-                        color: #939393;
-                        margin-top: 5px;
-                        margin-right: 14px;
-                        cursor: pointer;
-                        -webkit-tap-highlight-color: rgba(0,0,0,0);
-                    }
-                    ul{
-                        li{
-                            .critic {
-                                margin-top: 17px;
-                                .headPortrait {
-                                    border-radius: 50%;
-                                }
-                                img {
-                                    width: 30px;
-                                    height: 30px;
-                                    display: inline;
-                                    vertical-align: middle;
-                                }
-                                span {
-                                    img {
-                                        width: 30px;
-                                        height: 30px;
-                                        border-radius: initial;
-                                        display: inline;
-                                        vertical-align: middle;
-                                    }
-                                }
-                                .delete-comment {
-                                    margin-left: 8px;
-                                    img{
-                                        width: 14px;
-                                        height: 14px;
-                                    }
-                                }
-                                .replyListShow{
-                                    font-size: 12px;
-                                    float: right;
-                                    padding: 0 15px 0 5px;
-                                    cursor: pointer;
-                                    -webkit-tap-highlight-color: rgba(0,0,0,0);
-                                    img{
-                                        width: 13px;
-                                        height: 7px;
-                                        vertical-align: middle;
-                                        display: inline-block;
-                                    }
-                                    i{
-                                        display: inline-block;
-                                        min-width: 20px;
-                                        text-align: center;
-                                    }
-                                }
-                                .like-comment {
-                                    font-size: 12px;
-                                    float: right;
-                                    padding: 0 15px 0 5px;
-                                    cursor: pointer;
-                                    -webkit-tap-highlight-color: rgba(0,0,0,0);
-                                    img{
-                                        width: 12px;
-                                        height: 12px;
-                                        vertical-align: baseline;
-                                    }
-                                    i{
-                                        display: inline-block;
-                                        min-width: 20px;
-                                        text-align: center;
-                                    }
-                                }
-                                span {
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                    margin-left: 8px;
-                                    font-size: 14px;
-                                    color: #939393;
-                                }
-                                .criticName{
-                                    font-size: 14px;
-                                }
-                                .criticDate{
-                                    font-size: 12px;
-                                }
-                            }
-                            .commentContent {
-                                margin-left: 38px;  
-                                margin-top: 4px; 
-                                font-size: 14px;
-                                color: #383838;
-                            }
-                            .replyListLi{
-                                display: flex;
-                            }
-                            .replyContent{
-                                margin-right: 0px;
-                                font-size: 14px;
-                                color: #383838;
-                                word-break: break-all;
-                                // display: inline-block;
-                                padding: 3px 10px 10px;
-                                flex: 1;
-                            }
-                            .replyList{
-                                background-color: #e7e7e7;
-                                margin-right: 0px;
-                            }
-                            .relpyListDelet{
-                                margin-top: 2px;
-                                font-size: 14px;
-                                padding: 3px 10px 10px;
-                                // float: right;
-                                cursor: pointer;
-                                -webkit-tap-highlight-color: rgba(0,0,0,0);
-                                .replyListImg{
-                                    width: 12px;
-                                    height: 12px;
-                                }
-                            }
+                            float: right;
                         }
                     }
                 }
@@ -1048,7 +975,9 @@ export default {
     clear: both;
     .recommedationTitle{
         background:#fff;
-        padding-top:15px!important;
+        padding-top:13px!important;
+        padding-bottom:10px!important;
+        border-bottom:1px solid #F6F6F6;
         span {
         display: inline-block;
         height: 20px;
@@ -1057,17 +986,18 @@ export default {
         display: inline-block;
         width: 5px;
         height: 14px;
-        background-color: #21a3ff;
+        background-color: #EE5050;
+        border-radius:2px;
         margin-right: 10px;
         float:left;
         position: relative;
         top:3.5px;
         }
         .modelName{
-        font-size: 16px;
+        font-size: 14px;
         display: inline-block;
         float:left;
-        color: #393939;
+        color: #555;
         }
     }        
         .inline{
@@ -1096,241 +1026,6 @@ export default {
             float: right;
             margin-right: 8px;
             margin-top: 18px;
-        }
-    }
-    .recommendationContent {
-        clear: both;
-        text-align: left;
-        ul {
-            li {
-                position: relative;
-                // height: 70px;
-                height: auto !important;
-                padding: 16px 0 5px 0 !important;
-                border-bottom: 1px solid #ccc;
-                clear: both;
-                .santu{
-                    clear: both;
-                    // position: absolute;
-                    // top: 0px;
-                    // right: 10px;
-                    img:nth-child(1) {
-                        margin-left: 0;
-                    }
-                }
-                .recommendationTitle {
-                    position: relative;
-                    display: inline-block;
-                    font-size: 16px;
-                    color: #393939;
-                    // width: 349px;
-                    left: 10px;
-                    // margin-bottom: 10px;
-                }
-                .recommendationTitle1 {
-                    display: inline-block;
-                    vertical-align: top;
-                    font-size: 16px;
-                    color: #393939;
-                    // width: 239px;
-                    width: 204px;
-                    // margin-left: 10px;
-                    margin-left: 0;
-                }
-                .subscript {
-                    clear: both;
-                    line-height: 0.05rem;
-                    margin-top: 10px;
-                    margin-bottom: 0px;
-                    margin-left: 10px;
-                    // width: 355px;
-                    color: #939393;
-                    font-size: 12px;
-                    height: 17px;
-                }
-                .subscript1 {
-                    display: inline-block;
-                    position: absolute;
-                    top: 68px;
-                    // left: 10px;
-                    left: 0;
-                    width: 235px;
-                    color: #939393;
-                    font-size: 12px;
-                    height: 17px;
-                }
-                img {
-                    position: relative;
-                    // display: inline-block;
-                    width: 110px;
-                    height: 69px;
-                    vertical-align: top;
-                    margin-left: 5px;
-                    border-radius: 8px;
-                    float: right;
-                    bottom: 10px;
-                }
-            }
-        }
-    }
-    .comment_area {
-        margin-top: 33px;
-        // padding-bottom:30px;
-        .toComment{
-            margin-top:20px; 
-            font-size: 14px;
-        }
-        .noComment {
-            height: 111px;
-            // border-bottom: 1px solid #DBDBDB;
-            width: 100%;
-            position: relative;
-            div {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%,-50%);
-                img {
-                    width: 110px;
-                    height: 102.3px;
-                    display: block;
-                    margin: 0 auto;
-                }
-                span {
-                    font-size: 14px;
-                    color: #383838;
-                    display: block;
-                    margin-top: 24.7px;
-                    width: 240px;
-                }
-                a {
-                    display: block;
-                    margin: 0 auto;
-                    margin-top: 24px;
-                    font-size: 12px;
-                    color: #21a3ff;
-                    width: 83px;
-                    height: 30px;
-                    border: 1px solid #21A3FF;
-                    border-radius: 8px;
-                    line-height: 30px;
-                    text-align: center;
-
-                }
-            }
-        }
-        p {
-            display: inline-block;
-            float: right;
-            margin-right: 17px;
-            img {
-                display: inline-block;
-                vertical-align: middle;
-                margin-left: 9px;
-            }
-            .writeComment {
-                width: 15px;
-                height: 15px;
-            }
-            .viewComment {
-                width: 20px;
-                height: 20px;
-            }
-            p {
-                display: inline-block;
-                vertical-align: middle;
-                margin-right: 14px;
-                margin-left: 8px;
-                font-size: 14px;
-            }
-        }
-        div {
-            // padding: 0 0 0 10px;
-            font-size: 17px;
-            color: #393939;
-            // line-height: 50%;
-            span {
-                display: inline-block;
-                height: 20px;
-                line-height: 20px;
-                .colorMark {
-                    display: inline-block;
-                    width: 5px;
-                    height: 20px;
-                    background-color: #21a3ff;
-                    margin-right: 8px;
-                    top:3.5px;
-                }
-            }
-            .moreComment {
-                font-size: 13px;
-                color: #44b1ff;
-                margin-top: 5px;
-                margin-right: 14px;
-                cursor: pointer;
-                -webkit-tap-highlight-color: rgba(0,0,0,0);
-            }
-            ul{
-                li{
-                    .critic {
-                        margin-top: 17px;
-                        .headPortrait {
-                            border-radius: 50%;
-                        }
-                        img {
-                            width: 30px;
-                            height: 30px;
-                            display: inline;
-                            vertical-align: middle;
-                        }
-                        span {
-                            img {
-                                width: 30px;
-                                height: 30px;
-                                border-radius: initial;
-                                display: inline;
-                                vertical-align: middle;
-                            }
-                        }
-                        .delete-comment {
-                            margin-left: 8px;
-                            img{
-                                width: 14px;
-                                height: 14px;
-                            }
-                        }
-                        .like-comment {
-                            font-size: 12px;
-                            float: right;
-                            padding: 0 15px 0 5px;
-                            cursor: pointer;
-                            -webkit-tap-highlight-color: rgba(0,0,0,0);
-                            img{
-                                width: 12px;
-                                height: 12px;
-                                vertical-align: baseline;
-                            }
-                            i{
-                                display: inline-block;
-                                min-width: 20px;
-                                text-align: center;
-                            }
-                        }
-                        span {
-                            display: inline-block;
-                            vertical-align: middle;
-                            margin-left: 8px;
-                            font-size: 14px;
-                            color: #A3A3A3;
-                        }
-                    }
-                    .commentContent {
-                        margin: 4px 10px 0 38px;
-                        font-size: 14px;
-                        color: #383838;
-                    }
-                }
-            }
         }
     }
 }
