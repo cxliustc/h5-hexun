@@ -1,8 +1,23 @@
 <template>
     <div class="wrapper overflowH" v-cloak id="infoDetailBox">
+        <!-- 文章遮罩 -->
         <div class="mainMask">
-            <p>提示:本内容由百联大宗提供,请验证手机号后获取全文</p>
+            <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>
         </div>
+        <!-- 验证码弹出层 -->
+        <div class='VerificationCodeWrap'>
+            <div class="VerificationCodeContent">
+                <div>
+                    <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号">
+                </div>
+                <div>
+                    <input type="text" class="codeBox" v-model='codeNum' @input='codeNum=codeNum.replace(/[^\d\.]/g,"")' placeholder="请输入验证码">
+                    <span class="getCode" @click='getVerificationCode(phoneNum)'>发送验证码</span>
+                </div>
+                <button class="subCode">提交</button>
+            </div>
+        </div>
+        <!-- 正文 -->
         <div class='title'>{{infoDetail.title}}</div>
         <div class="content">
             <div class="authorInfo">
@@ -59,13 +74,11 @@
             </div>
             <div class="infoContent">
                 <span class='infoContent-html' :class="{'isIosG':isIos}" v-html="delBrInData(infoDetail.texHtml)"></span>
-                <!-- <div>
-                    <span v-for='(item, index) in infoDetail.tagList' :key='index' class='appreciate'>{{item.tagName}}</span>
-                </div>                     -->
                 <span class='declare' v-if="infoDetail.isShowOrigin === '1'">来源：{{infoDetail.ext2}}</span>
                 <span class='declare' v-if="infoDetail.isShowDisclaimer === '1'">免责声明：本文非百联大宗原创，以上仅代表作者个人观点</span>
                 <span class='declare' v-if="infoDetail.isShowCopyright === '1'">版权声明：如需转载，请注明来自“百联大宗”</span>
             </div>
+            <!-- 相关推荐 -->
             <div class='infoRecommendation'>
                 <div class='recommedationTitle'>
                     <span>
@@ -112,7 +125,8 @@
 </template>
 <script>
 import apis from '@/apps/APP/apis';
-import {getTime} from 'UTILS/utils';
+import { getTime } from 'UTILS/utils';
+import { isPhone } from 'UTILS/StringUtil';
 import chart from 'vue-echarts';
 export default {
     name: 'infodetail',
@@ -122,6 +136,8 @@ export default {
             infoRecommendation: {}, // 相关推荐数据
             isIos: false, // 是否是ios
             errorImg: import('../../assets/images/user-default-blue.png'),
+            phoneNum: '', // 电话号码
+            codeNum: '', // 验证码
             polar: {// 研报图表配置
                 tooltip: {
                     trigger: 'item',
@@ -257,8 +273,6 @@ export default {
         this.setPolarFontSize();
     },
     mounted () {
-        // var myChart=$("#myChart");
-        // myChart.style.width=window.innerWidth+'px';
     },
     methods: {
         // 判断ios，android
@@ -356,6 +370,27 @@ export default {
                 console.log(this.polar.series[1].data);
                 console.log(this.polar.series[0].data);
             }
+        },
+        // 获取验证码
+        getVerificationCode (phoneNum) {
+            if (isPhone(phoneNum)) {
+                let params = {
+                    user: {
+                        mobile: phoneNum
+                    }
+                };
+                apis.info.getVerificationCode(params).then((data) => {
+                    if (data.success) {
+                    }
+                });
+            } else {
+                this.$vux.toast.show({
+                    text: '请输入正确手机号',
+                    type: 'text',
+                    width: '2rem',
+                    position: 'bottom'
+                });
+            }
         }
     }
 };
@@ -383,9 +418,87 @@ export default {
     -webkit-text-size-adjust: none;
     -webkit-overflow-scrolling: touch;
     background:#F2F2F2;
-    // .mainMask{
-
-    // }
+    .mainMask{
+        height:100px;
+        width:100%;
+        border-bottom:0.3rem solid #fff;
+        background:url(../../assets/images/maskMain.png) repeat-x bottom;
+        background-size:1px 1rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        text-align: center;
+        span{
+            font-size:12px;
+            color:#EE5050;
+            position: relative;
+            top:38px;
+            letter-spacing:0.15em;
+        }
+    }
+    .VerificationCodeWrap{
+        height:100%;
+        width:100%;
+        position: fixed;
+        top:0;
+        left:0;
+        background:transparent;
+        &:before{
+            content:'';
+            background:#000;
+            opacity:0.4;
+            height:100%;
+            width:100%;
+            display: block;
+            position: absolute;
+            top:0;
+            left:0;
+        }
+        .VerificationCodeContent{
+            position: absolute;
+            height:229px;
+            width:287px;
+            background: #FFFFFF;
+            border: 1px solid #E2E2E2;
+            border-radius: 8px;
+            top:219px;
+            left:45px;
+            padding:34px 0 31px 28px;
+            .getCode{
+                display: inline-block;
+                width:88px;
+                height:36px;
+                background: #EE5050;
+                border-radius: 8px 8px 8px 8px;
+                color:#fff;
+                text-align: center;
+                line-height: 36px;
+            }
+            .subCode{
+                background: #EE5050;
+                border-radius: 8px;
+                width:234px;
+                height:39px;
+                color:#fff;
+                font-size:18px;
+                border:0;
+            }
+            input{
+                height:36px;
+                border: 1px solid #CBCBCB;
+                border-radius: 8px;
+                font-size:14px;
+                padding:8px 14px;
+                margin-bottom:26px;
+                &.phoneBox{
+                    width: 230px;
+                }
+                &.codeBox{
+                    width:139px;
+                }
+            }
+        }
+    }
     .headPortrait {
         border: 0.5px solid #E5E5E5;
     }
