@@ -1,7 +1,7 @@
 <template>
     <div class="dataDetail">
         <scroll
-        :data="datas"
+        :data="infoList"
         :scrollbar="true"
         @pullingDown="onPullingDown"
         @pullingUp="onPullingUp"
@@ -22,21 +22,53 @@
                         </p>
                         <div class="dataList">
                             <div class='child'>
-                                <p class='first red'>7800</p>
-                                <p class='second'>+2.1%</p>
+                                <p
+                                    class='first bold'
+                                    :class="{
+                                        'red': getIn(['spotPriceColor'], prices) === '1',
+                                        'green': getIn(['spotPriceColor'], prices) === '-1'
+                                    }"
+                                >{{getIn(['spotPrice'], prices)}}</p>
+                                <p
+                                    class='second'
+                                    :class="{
+                                        'red': getIn(['spotPriceColor'], prices) === '1',
+                                        'green': getIn(['spotPriceColor'], prices) === '-1'
+                                    }"
+                                >
+                                    {{getIn(['spotPriceRate'], prices)}}
+                                </p>
                             </div>
                             <div class='child'>
-                                <p class='first red'>610.00</p>
-                                <p class='second'>+3.10%</p>
+                                <p
+                                    class='first bold'
+                                    :class="{
+                                        'red': getIn(['settlePriceColor'], prices) === '1',
+                                        'green': getIn(['settlePriceColor'], prices) === '-1'
+                                    }"
+                                >{{getIn(['settlePrice'], prices)}}</p>
+                                <p
+                                    class='second'
+                                    :class="{
+                                        'red': getIn(['settlePriceColor'], prices) === '1',
+                                        'green': getIn(['settlePriceColor'], prices) === '-1'
+                                    }"
+                                >{{getIn(['settlePriceRate'], prices)}}</p>
                             </div>
                             <div class='child'>
-                                <p class='first'>细分化工</p>
-                                <p class='second'>21112.00</p>
+                                <p class='first'>{{getIn(['stockIndexName'], prices)}}</p>
+                                <p
+                                    class='second'
+                                    :class="{
+                                        'red': getIn(['stockIndexColor'], prices) === '1',
+                                        'green': getIn(['stockIndexColor'], prices) === '-1'
+                                    }"
+                                >{{getIn(['stockIndexPrice'], prices)}}</p>
                             </div>
                         </div>
                     </div>
                     <div class="chart">
-
+                        <chart width='100%' id="canvas" :options="polar"></chart>
                     </div>
                     <div class="chartDesc clearfix">
                         <i class='blue'></i>
@@ -45,10 +77,9 @@
                         <span class='word'>期货</span>
                         <i class='yellow'></i>
                         <span class='word'>股指</span>
-                        <span class="time">更新时间：2018/12/09</span>
+                        <span class="time">更新时间：{{getIn(['date'], prices)}}</span>
                     </div>
                     <div class="line"></div>
-                    <!-- <chart id="canvas" :options="polar"></chart> -->
                     <div class="recommend">
                         <div class="title">
                             <i></i>
@@ -56,33 +87,33 @@
                         </div>
                     </div>
                 </li>
-                <li v-for="(item, index) in datas" :key="index" >
+                <li v-for="(item, index) in infoList" :key="index" >
                     <!-- 1张图 -->
-                    <div class='clearfix detail' v-if="item.cmsInfoAttList && item.cmsInfoAttList.length === 1">
+                    <div class='clearfix detail' v-if="getIn(['cmsInfoAttList'], item) && getIn(['cmsInfoAttList'], item).length === 1">
                         <div class="left">
                             <p class="title">
-                                {{item.title}}
+                                {{getIn(['title'], item)}}
                             </p>
                             <p class="timeAndSource clearfix">
-                                <span class="source">{{item.author}}</span>
-                                <span class="time">{{item.releaseDate | daysBefore}}</span>
+                                <span class="source">{{getIn(['author'], item)}}</span>
+                                <span class="time">{{getIn(['releaseDate'], item) | daysBefore}}</span>
                             </p>
                         </div>
                         <div class="right">
-                            <img :src="item.cmsInfoAttList[0]" alt="">
+                            <img :src="getIn(['cmsInfoAttList', 0], item)" alt="">
                         </div>
                     </div>
                     <!-- 无图或者大于1张图 -->
-                    <div class='clearfix detail' v-if="!item.cmsInfoAttList || item.cmsInfoAttList.length > 1">
+                    <div class='clearfix detail' v-if="!getIn(['cmsInfoAttList'], item) || getIn(['cmsInfoAttList'], item).length > 1">
                         <p class="title">
-                            {{item.title}}
+                            {{getIn(['title'], item)}}
                         </p>
                         <div class="images">
-                            <img v-for='(el, ind) in item.cmsInfoAttList' :key='ind' :src="el" alt="">
+                            <img v-for='(el, ind) in getIn(["cmsInfoAttList"], item)' :key='ind' :src="el" alt="">
                         </div>
                         <p class="timeAndSource clearfix">
-                            <span class="source">{{item.author}}</span>
-                            <span class="time">{{item.releaseDate | daysBefore}}</span>
+                            <span class="source">{{getIn(['author'], item)}}</span>
+                            <span class="time">{{getIn(['releaseDate'], item) | daysBefore}}</span>
                         </p>
                     </div>
                 </li>
@@ -95,7 +126,6 @@ import Scroll from 'COMPONENTS/scroll';
 import mixin from './mixin';
 import chart from 'vue-echarts';
 import apis from '../../apis/index';
-// import * as filters from '../../../../utils/filters';
 export default {
     mixins: [mixin],
     components: {
@@ -104,21 +134,143 @@ export default {
     name: 'dataDetail',
     data () {
         return {
-            datas: []
+            infoList: [],
+            polar: {
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.76)',
+                    padding: 10,
+                    showDelay: 0,
+                    formatter: function (params) {
+                        let str = params[0].axisValue;
+                        params.map((item, index) => {
+                            str += '<br/>' + item.seriesName + '：' + (item.value ? item.value : '-');
+                        });
+                        return str;
+                    },
+                    textStyle: {
+                        fontSize: 12
+                    },
+                    trigger: 'axis'
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: [],
+                        axisLine: {
+                            lineStyle: {
+                                color: '#393939'
+                            }
+                        },
+                        axisLabel: {
+                            formatter: function (value) {
+                                return value.slice(5);
+                            },
+                            fontSize: 12
+                        }
+                    }
+                ],
+                yAxis: [
+                    {
+                        name: '现货／期货',
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value}',
+                            textStyle: {
+                                fontSize: 12
+                            }
+                        },
+                        nameTextStyle: {
+                            fontSize: 12
+                        }
+                    },
+                    {
+                        name: '股指',
+                        type: 'value',
+                        scale: true,
+                        axisLabel: {
+                            formatter: '{value}',
+                            textStyle: {
+                                fontSize: 12
+                            }
+                        },
+                        nameTextStyle: {
+                            fontSize: 12
+                        }
+                    }
+                ],
+                series: [
+                    {
+                        name: '现货',
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: {
+                            normal: {
+                                color: '#95D3FF',
+                                lineStyle: {
+                                    color: '#95D3FF'
+                                }
+                            }
+                        },
+                        data: [],
+                        yAxisIndex: 0
+                    }, {
+                        name: '期货',
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: {
+                            normal: {
+                                color: '#EE5050',
+                                lineStyle: {
+                                    color: '#EE5050'
+                                }
+                            }
+                        },
+                        data: [],
+                        yAxisIndex: 0
+                    }, {
+                        name: '股指',
+                        type: 'line',
+                        smooth: true,
+                        itemStyle: {
+                            normal: {
+                                color: '#F1CB18',
+                                lineStyle: {
+                                    color: '#F1CB18'
+                                }
+                            }
+                        },
+                        data: [],
+                        yAxisIndex: 1
+                    }
+                ],
+                grid: {
+                    left: '100',
+                    right: '100',
+                    bottom: '45',
+                    top: '60'
+                }
+            },
+            prices: {},
+            count: 2,
+            name: ''
         };
     },
     created () {
+        let {id, name} = this.$route.params;
+        this.name = decodeURIComponent(name);
         this.onPullingDown();
+        this.getDatas(id);
+        this.setPolarFontSize();
     },
     methods: {
-        // daysBefore: filters.daysBefore,
         // 下拉刷新
         onPullingDown () {
-            console.log('下拉');
             apis.data.getList({
                 pageNum: 1,
                 pageSize: 10,
-                queryType: '1'
+                channelMName: this.name
             }).then(({data, pageCount}) => {
                 let cmsAppHomePageResList = data.data;
                 if (!cmsAppHomePageResList || cmsAppHomePageResList.length === 0) {
@@ -126,31 +278,64 @@ export default {
                     data = [];
                 } else {
                 }
-                if (this.setData) this.setData(cmsAppHomePageResList);
                 this.count = 2;
-                this.datas = cmsAppHomePageResList;
+                this.infoList = cmsAppHomePageResList;
             }).catch(() => {
                 this.$refs.scroll.forceUpdate();
             });
         },
         // 上拉加载
         onPullingUp () {
-            console.log('上拉');
             apis.data.getList({
                 pageNum: this.count,
                 pageSize: 10,
-                queryType: '1'
+                channelMName: this.name
             }).then(({data, pageCount}) => {
                 let cmsAppHomePageResList = data.data;
                 if (this.count > pageCount) {
                     this.$refs.scroll.forceUpdate(false);
                 } else {
-                    this.datas = this.datas.concat(cmsAppHomePageResList);
+                    this.infoList = this.infoList.concat(cmsAppHomePageResList);
                     this.count++;
                 }
             }).catch(() => {
                 this.$refs.scroll.forceUpdate();
             });
+        },
+        getDatas (id) {
+            apis.data.getDatas({id}).then(({data}) => {
+                if (data.success) {
+                    this.prices = data.data;
+                    // 处理图表的数据
+                    let xData = [];
+                    let yData1 = [];
+                    let yData2 = [];
+                    let yData3 = [];
+                    data.data.history.map((item, index) => {
+                        xData.unshift(item[0]);
+                        yData1.unshift(item[1]);
+                        yData2.unshift(item[2]);
+                        yData3.unshift(item[3]);
+                    });
+                    this.polar.xAxis[0].data = xData;
+                    this.polar.series[0].data = yData1;
+                    this.polar.series[1].data = yData2;
+                    this.polar.series[2].data = yData3;
+                } else {
+                    console.log(data.message);
+                }
+            }).catch(() => {
+                console.log('报错');
+            });
+        },
+        setPolarFontSize () {
+            let fontSize = parseFloat(window.getComputedStyle(document.documentElement)['fontSize']) / 100;
+            this.polar.tooltip.textStyle.fontSize = 12 * fontSize;
+            this.polar.xAxis[0].axisLabel.fontSize = 12 * fontSize;
+            this.polar.yAxis[0].axisLabel.textStyle.fontSize = 12 * fontSize;
+            this.polar.yAxis[1].axisLabel.textStyle.fontSize = 12 * fontSize;
+            this.polar.yAxis[0].nameTextStyle.fontSize = 12 * fontSize;
+            this.polar.yAxis[1].nameTextStyle.fontSize = 12 * fontSize;
         }
     }
 };
@@ -190,13 +375,19 @@ export default {
                 .second{
                     margin-top: 3px;
                     font-size: 12px;
-                    color: #EE5050;
+                    color: #333;
                     letter-spacing: -0.13px;
                     height:17px;
                     line-height: 17px;
                 }
                 .red{
                     color: #EE5050;
+                }
+                .green{
+                    color:#2EBA80;
+                }
+                .bold{
+                    font-weight: 400;
                 }
             }
             .child:last-child{
@@ -207,6 +398,11 @@ export default {
     }
     .chart{
         height:210px;
+        padding: 0 15px;
+        .echarts{
+            width:100%!important;
+            height:100%!important;
+        }
     }
     .chartDesc{
         margin: 18px 0 22px;
@@ -311,9 +507,9 @@ export default {
                 margin-bottom: 14px;
                 img{
                     display: inline-block;
-                    width:110px;
-                    margin-right: 7.5px;
-                    height:72px;
+                    width:112px;
+                    margin-right: 4.5px;
+                    height:74px;
                 }
                 img:last-child{
                     margin-right: 0;
