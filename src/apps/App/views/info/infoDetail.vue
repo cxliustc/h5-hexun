@@ -1,21 +1,22 @@
 <template>
-    <div class="wrapper overflowH" v-cloak id="infoDetailBox">
+    <div class="wrapper" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
         <!-- 文章遮罩 -->
-        <div class="mainMask">
+        <div class="mainMask" v-show="showMainMask" @click="showBomb = true">
             <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>
         </div>
         <!-- 验证码弹出层 -->
-        <div class='VerificationCodeWrap'>
+        <div class='VerificationCodeWrap' v-show="showBomb">
             <div class="VerificationCodeContent">
                 <div>
                     <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号">
                 </div>
                 <div>
                     <input type="text" class="codeBox" v-model='codeNum' @input='codeNum=codeNum.replace(/[^\d\.]/g,"")' placeholder="请输入验证码">
-                    <span class="getCode" @click='getVerificationCode(phoneNum)'>发送验证码</span>
+                    <span class="getCode" :class='{"isGetCode" : isGetCode}' @click='getVerificationCode(phoneNum)'>{{isGetCode ? `已发送(${CountDown}S)` : '发送验证码'}}</span>
                 </div>
-                <button class="subCode">提交</button>
+                <button class="subCode" @click='subPhone()'>提交</button>
             </div>
+            <button class="VerificationClose" @click="showBomb = false"><img src="../../assets/images/close.png" alt=""></button>
         </div>
         <!-- 正文 -->
         <div class='title'>{{infoDetail.title}}</div>
@@ -128,6 +129,7 @@ import apis from '@/apps/APP/apis';
 import { getTime } from 'UTILS/utils';
 import { isPhone } from 'UTILS/StringUtil';
 import chart from 'vue-echarts';
+import { setTimeout } from 'timers';
 export default {
     name: 'infodetail',
     data () {
@@ -138,6 +140,10 @@ export default {
             errorImg: import('../../assets/images/user-default-blue.png'),
             phoneNum: '', // 电话号码
             codeNum: '', // 验证码
+            isGetCode: false, // 验证码是否发送
+            CountDown: 60, // 倒计时
+            showMainMask: true, // 文章遮罩
+            showBomb: true, // 短信验证弹框
             polar: {// 研报图表配置
                 tooltip: {
                     trigger: 'item',
@@ -371,26 +377,58 @@ export default {
                 console.log(this.polar.series[0].data);
             }
         },
+        // 验证码倒计时
+        getCountDown () {
+            if (this.CountDown > 0) {
+                this.CountDown --;
+                let getCountDown = this.getCountDown;
+                setTimeout(function () {
+                    getCountDown();
+                }, 1000);
+            } else {
+                this.CountDown = 60;
+                this.isGetCode = false;
+            }
+        },
         // 获取验证码
         getVerificationCode (phoneNum) {
-            if (isPhone(phoneNum)) {
-                let params = {
-                    user: {
-                        mobile: phoneNum
-                    }
-                };
-                apis.info.getVerificationCode(params).then((data) => {
-                    if (data.success) {
-                    }
-                });
-            } else {
-                this.$vux.toast.show({
-                    text: '请输入正确手机号',
-                    type: 'text',
-                    width: '2rem',
-                    position: 'bottom'
-                });
+            if (!this.isGetCode) {
+                if (isPhone(phoneNum)) {
+                    let params = {
+                        user: {
+                            mobile: phoneNum
+                        }
+                    };
+                    apis.info.getVerificationCode(params).then((data) => {
+                        if (data.success) {
+                            this.isGetCode = true;
+                            this.getCountDown();
+                        }
+                    });
+                } else {
+                    this.$vux.toast.show({
+                        text: '请输入正确手机号',
+                        type: 'text',
+                        width: '2rem',
+                        position: 'bottom'
+                    });
+                }
             }
+        },
+        // 提交手机号
+        subPhone () {
+            this.showBomb = false;
+            let params = {
+                user: {
+                    mobile: this.phoneNum,
+                    code: this.codeNum
+                }
+            };
+            apis.info.submitCode(params).then((data) => {
+                if (data.success) {
+                    this.showBomb = false;
+                }
+            });
         }
     }
 };
@@ -454,6 +492,18 @@ export default {
             top:0;
             left:0;
         }
+        .VerificationClose{
+            border:0;
+            position: absolute;
+            bottom:60px;                              
+            left:170px;
+            margin-left:-11.3px;
+            background: transparent;
+            img{
+                height:22.6px;
+                width:22.6px;
+            }
+        }
         .VerificationCodeContent{
             position: absolute;
             height:229px;
@@ -464,6 +514,7 @@ export default {
             top:219px;
             left:45px;
             padding:34px 0 31px 28px;
+
             .getCode{
                 display: inline-block;
                 width:88px;
@@ -473,6 +524,10 @@ export default {
                 color:#fff;
                 text-align: center;
                 line-height: 36px;
+                &.isGetCode{
+                    background:#ddd;
+                    color:#aaa;
+                }
             }
             .subCode{
                 background: #EE5050;
