@@ -6,7 +6,14 @@ export function isPhone (phoneNum) {
         return true;
     }
 }
-
+export function isNumber (Num) {
+    let phone = /^[0-9]*$/;
+    if (!phone.test(Num)) {
+        return false;
+    } else {
+        return true;
+    }
+}
 export function isNull (str) {
     return (str === '' || str === undefined || str === null);
 }

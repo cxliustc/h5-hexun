@@ -10,29 +10,14 @@
         <div slot="list">
             <div id="box">
                 <ul id="stockIndex">
-                    <li>
-                        <p>大宗商品</p>
-                        <p>2112.00</p>
-                        <p><span>+11.65</span><span>+0.45%</span></p>
-                    </li>
-                    <li>
-                        <p>大宗商品</p>
-                        <p>2112.00</p>
-                        <p><span>+11.65</span><span>+0.45%</span></p>
-                    </li>
-                    <li>
-                        <p>大宗商品</p>
-                        <p>2112.00</p>
-                        <p><span>+11.65</span><span>+0.45%</span></p>
-                    </li>
-                    <li>
-                        <p>大宗商品</p>
-                        <p>2112.00</p>
-                        <p><span>+11.65</span><span>+0.45%</span></p>
+                    <li v-for="(item, index) in stockindexlist" :key='index' :class='{color: item.stockIndexColor == -1 ? true : false}'>
+                        <p>{{item.stockIndexName}}</p>
+                        <p>{{item.stockIndexPrice}}</p>
+                        <p><span>+11.65</span><span>{{item.stockIndexRate}}</span></p>
                     </li>
                 </ul>
-                <div class="bodyBox" v-for="(item, index) in list" :key='index'>
-                    <div class="headline" @click="switchFn(item)"><i :class='{arrow: item.active}'></i>{{item.title}}</div>
+                <div class="bodyBox" v-for="(item, index) in classifylist" :key='index'>
+                    <div class="headline" @click="switchFn(item)"><i :class='{arrow: item.active}'></i>{{item.goodsCategoryName}}</div>
                     <div :class="['contentBox', {'auto': item.active}]">
                         <div class="minHeader">
                             <span>商品</span>
@@ -41,9 +26,9 @@
                         </div>
                         <ul>
                             <li>
-                                <div class="good">{{item.name}}</div>
+                                <div class="good">乙二醇</div>
                                 <div class="spot">
-                                    <p>{{item.price}}</p>
+                                    <p>7800</p>
                                     <p>+2.1%</p>
                                     <p>610.00</p>
                                     <p>+3.10%</p>
@@ -74,30 +59,14 @@
     </scroll>
 </template>
 <script>
+import apis from '@/apps/APP/apis';
 import Scroll from 'COMPONENTS/scroll';
 export default {
-    name: 'test',
+    name: 'commodity',
     data () {
         return {
-            list: [{
-                title: '能源化工',
-                name: '乙二醇',
-                price: '7800.00',
-                active: true
-
-            }, {
-                title: '有色金属',
-                name: '原油',
-                price: '6000.00',
-                active: false
-
-            }, {
-                title: '黑色金属',
-                name: '甲醇',
-                price: '2345.00',
-                active: false
-
-            }]
+            stockindexlist: [],
+            classifylist: []
         };
     },
     components: {
@@ -105,13 +74,29 @@ export default {
     },
     methods: {
         switchFn: function (item) {
-            this.list.forEach((item) => {
+            this.classifylist.forEach((item) => {
                 item.active = false;
             });
             item.active = true;
         }
+    },
+    created () {
+        apis.commodity.stockindexdata().then((data) => {
+            data = data.body;
+            if (data.success) {
+                this.stockindexlist = data.data;
+                // console.log(this.stockindexlist);
+            }
+        });
+        apis.commodity.classifydata().then((data) => {
+            data = data.body;
+            if (data.success) {
+                this.classifylist = data.data;
+                this.classifylist[0].active = true;
+                // console.log(this.classifylist);
+            }
+        });
     }
-    // created () {}
 };
 </script>
 <style lang="less">
@@ -131,6 +116,9 @@ export default {
                 background-color: #EE5050;
                 border-radius: 5px;
                 padding-top: 10px;
+                &.color {
+                    background-color: #2EBA80;
+                }
                 p:nth-child(1) {
                     font-size: 12px;
                     color: #fff;

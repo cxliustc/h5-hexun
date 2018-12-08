@@ -15,6 +15,7 @@ const httpRequest = async function (options) {
         params: request,
         options
     });
+
     let {raceStatus} = res;
     if (!raceStatus) {
         // return Promise.reject('race');
