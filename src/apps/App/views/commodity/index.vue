@@ -110,8 +110,8 @@ export default {
             });
             item.active = true;
         }
-    },
-    created () {}
+    }
+    // created () {}
 };
 </script>
 <style lang="less">
