@@ -32,9 +32,13 @@ export const ls = {
     // 设置cookie
     setCookie (key, value, time) {
         if (time) {
-            let date = new Date();
-            date.setDate(date.getDate() + time);
-            document.cookie = key + '=' + value + ';expires=' + date.toGMTString() + ';path=/';
+            if (typeof time === 'object') {
+                document.cookie = key + '=' + value + ';expires=' + time.toGMTString() + ';path=/';
+            } else {
+                let date = new Date();
+                date.setDate(date.getDate() + time);
+                document.cookie = key + '=' + value + ';expires=' + date.toGMTString() + ';path=/';
+            }
         } else {
             document.cookie = key + '=' + value + ';path=/';
         }
@@ -42,13 +46,14 @@ export const ls = {
     // 获取cookie
     getCookie (key) {
         let array = document.cookie.split('; ');
+        let keyValue = '';
         array.map(val => {
             let [valKey, value] = val.split('=');
             if (valKey === key) {
-                return decodeURI(value);
+                keyValue = decodeURI(value);
             }
         });
-        return '';
+        return keyValue;
     }
 };
 

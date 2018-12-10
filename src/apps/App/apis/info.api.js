@@ -9,7 +9,7 @@ class Info {
     getInfoDetailData (params) {
         return callApi({
             method: 'post',
-            endpoint: getUrl('sociality/cms/infoDetail'), // sociality/cms/getInfoDetail
+            endpoint: getUrl('sociality/cms/getInfoDetail'), // sociality/cms/getInfoDetail
             request: params,
             api: GET_INFO_DETAILDATA
         });
@@ -17,7 +17,7 @@ class Info {
     getInfoDetailRecommendData (params) {
         return callApi({
             method: 'post',
-            endpoint: getUrl('sociality/cms/seoRelevantInfo'), // sociality/cms/getRelatedInfo
+            endpoint: getUrl('sociality/cms/getRelatedInfo'), // sociality/cms/getRelatedInfo
             request: params,
             api: GET_INFO_DETAILRECOMMENDDATA
         });
