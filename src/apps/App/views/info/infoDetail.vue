@@ -3,7 +3,7 @@
         <infoHeader :is-dynamicname='isDynamicname' :author-name='infoDetail.authorName|strLimit(6)' ></infoHeader>
         <div class="infoDetailWrapper" @scroll="modifyTitle($event)" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
             <!-- 文章遮罩 -->
-            <div class="mainMask" v-show="showMainMask" @click="showBomb = true">
+            <div class="mainMask" v-show="showMainMask" @click="getAllDetail()">
                 <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>
             </div>
             <!-- 验证码弹出层 -->
@@ -287,6 +287,8 @@ export default {
                 });
             }
         });
+        // 埋点
+        apis.info.buryingPoint({url: 'infoDetail'});
         // 判断ios，android
         this.getMobilesType();
         // 图表字体设置
@@ -441,13 +443,34 @@ export default {
             };
             let expires = new Date();
             expires = new Date((expires.getFullYear() + 50).toString());
-            ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
-            apis.info.submitCode(params).then((data) => {
-                if (data.success) {
-                    this.showBomb = false;
-                    ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
-                }
-            });
+            if (isPhone(this.phoneNum)) {
+                apis.info.submitCode(params).then((data) => {
+                    if (data.success) {
+                        this.showBomb = false;
+                        ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
+                    } else {
+                        this.$vux.toast.show({
+                            text: '验证码错误',
+                            type: 'text',
+                            width: '2rem',
+                            position: 'bottom'
+                        });
+                    }
+                });
+            } else {
+                this.$vux.toast.show({
+                    text: '请输入正确手机号',
+                    type: 'text',
+                    width: '2rem',
+                    position: 'bottom'
+                });
+            }
+        },
+        // 获取全文
+        getAllDetail () {
+            this.showBomb = true;
+            // 埋点
+            apis.info.buryingPoint({url: 'viewArticle', event: 'clickButton'});
         },
         // 下滑更改标题
         modifyTitle (e) {
