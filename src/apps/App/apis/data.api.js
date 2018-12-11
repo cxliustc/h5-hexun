@@ -34,7 +34,7 @@ class Data {
             method: 'post',
             waiting: true,
             request: params || {},
-            endpoint: getUrl('data/collectPageRequest')
+            endpoint: getUrl('hexun-portal/data/collectPageRequest')
         });
     }
 };
