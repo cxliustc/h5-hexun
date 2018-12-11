@@ -418,6 +418,7 @@ export default {
                         }
                     };
                     apis.info.getVerificationCode(params).then((data) => {
+                        data = data.body;
                         if (data.success) {
                             this.isGetCode = true;
                             this.getCountDown();
@@ -445,7 +446,9 @@ export default {
             expires = new Date((expires.getFullYear() + 50).toString());
             if (isPhone(this.phoneNum)) {
                 apis.info.submitCode(params).then((data) => {
+                    data = data.body;
                     if (data.success) {
+                        this.showMainMask = false;
                         this.showBomb = false;
                         ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
                     } else {
@@ -518,6 +521,7 @@ export default {
         bottom: 0;
         left: 0;
         text-align: center;
+        z-index:3;
         span{
             font-size:12px;
             color:#EE5050;
@@ -533,6 +537,7 @@ export default {
         top:0;
         left:0;
         background:transparent;
+        z-index:3;
         &:before{
             content:'';
             background:#000;
@@ -568,7 +573,7 @@ export default {
             margin-top:-114.5px;
             margin-left:-143.5px;
             padding:34px 0 31px 28px;
-
+            z-index:6;
             .getCode{
                 display: inline-block;
                 width:88px;

@@ -42,7 +42,7 @@ class Info {
     buryingPoint (params) {
         return callApi({
             method: 'get',
-            endpoint: getUrl('hexun-protal/data/collectPageRequest'),
+            endpoint: getUrl('hexun-portal/data/collectPageRequest'),
             request: params,
             api: GET_BURYINGPOINT
         });
