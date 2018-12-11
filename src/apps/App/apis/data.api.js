@@ -3,6 +3,7 @@ import callApi from 'UTILS/httpUtils';
 import {getUrl} from 'UTILS/httpConfig';
 const GET_LIST = Symbol('GET_LIST');
 const GET_DATAS = Symbol('GET_DATAS');
+const GET_MAIDIAN = Symbol('GET_MAIDIAN');
 class Data {
     getList (params) {
         return callApi({
@@ -24,6 +25,16 @@ class Data {
             waiting: true,
             endpoint: getUrl('sociality/cms/getGoodsData')
             // endpoint: 'http://192.168.98.76:8815/cms/getGoodsData'
+        });
+    }
+    // 埋点接口
+    getMaidian (params) {
+        return callApi({
+            api: GET_MAIDIAN,
+            method: 'post',
+            waiting: true,
+            request: params || {},
+            endpoint: getUrl('data/collectPageRequest')
         });
     }
 };

@@ -263,6 +263,7 @@ export default {
         this.onPullingDown();
         this.getDatas(id);
         this.setPolarFontSize();
+        apis.data.getMaidian({url: 'productDetail'});
     },
     methods: {
         // 下拉刷新
