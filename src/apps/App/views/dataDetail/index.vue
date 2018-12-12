@@ -12,7 +12,7 @@
         :listenScroll="true"
         :listenScrollEnd="true"
         ref="scroll">
-            <ul slot="list" class="list">
+            <ul slot="list" class="list" >
                 <li>
                     <div class="datas">
                         <p class="title">
@@ -87,7 +87,7 @@
                         </div>
                     </div>
                 </li>
-                <li v-for="(item, index) in infoList" :key="index" >
+                <li v-for="(item, index) in infoList" :key="index" @click='goToDetail(item.infoId)'>
                     <!-- 1张图 -->
                     <div class='clearfix detail' v-if="getIn(['cmsInfoAttList'], item) && getIn(['cmsInfoAttList'], item).length === 1">
                         <div class="left">
@@ -263,7 +263,7 @@ export default {
         this.onPullingDown();
         this.getDatas(id);
         this.setPolarFontSize();
-        apis.data.getMaidian({url: 'productDetail'});
+        apis.data.getMaidian();
     },
     methods: {
         // 下拉刷新
@@ -337,6 +337,12 @@ export default {
             this.polar.yAxis[1].axisLabel.textStyle.fontSize = 12 * fontSize;
             this.polar.yAxis[0].nameTextStyle.fontSize = 12 * fontSize;
             this.polar.yAxis[1].nameTextStyle.fontSize = 12 * fontSize;
+        },
+        goToDetail (item) {
+            this.$router.push({
+                name: 'infoDetail',
+                params: {informationId: item}
+            });
         }
     }
 };

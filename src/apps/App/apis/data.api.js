@@ -23,7 +23,7 @@ class Data {
             method: 'post',
             request: params || {},
             waiting: true,
-            endpoint: getUrl('sociality/cms/getGoodsData')
+            endpoint: getUrl('hexun-portal/cms/getGoodsData')
             // endpoint: 'http://192.168.98.76:8815/cms/getGoodsData'
         });
     }
@@ -31,10 +31,15 @@ class Data {
     getMaidian (params) {
         return callApi({
             api: GET_MAIDIAN,
-            method: 'post',
+            method: 'get',
             waiting: true,
-            request: params || {},
-            endpoint: getUrl('hexun-portal/data/collectPageRequest')
+            // request: params || {},
+            endpoint: getUrl('hexun-portal/data/collectPageRequest?url=productDetail'),
+            axiosOptions: {
+                headers: {
+                    'clientInfo': 'h5'
+                }
+            }
         });
     }
 };
