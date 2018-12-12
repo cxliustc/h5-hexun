@@ -26,7 +26,7 @@
                             <span>推荐股票</span>
                         </div>
                         <ul>
-                            <li v-for="(item, index) in contentlist" :key='index' @click="details()">
+                            <li v-for="(item, index) in contentlist" :key='index' @click="details(item)">
                                 <div class="good">{{item.cmsHexunConfigSimpleVO.goodsName}}</div>
                                 <div class="spot">
                                     <p :class='[{color1: item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
@@ -50,7 +50,7 @@
     </scroll>
 </template>
 <script>
-import apis from '@/apps/APP/apis';
+import apis from '@/apps/App/apis';
 import Scroll from 'COMPONENTS/scroll';
 export default {
     name: 'commodity',
@@ -86,12 +86,14 @@ export default {
             });
         },
         // 点击股指跳转
-        stock: function () {
-
-        },
+        stock: function () {},
         // 点击跳转详情页
-        details: function () {
-
+        details: function (item) {
+            console.log(item);
+            this.$router.push({
+                name: 'dataDetail',
+                params: {id: item.cmsHexunConfigSimpleVO.id}
+            });
         },
         // 渲染页面
         init: function () {
