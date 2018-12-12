@@ -1,6 +1,10 @@
 <template>
     <div id="app">
-        <router-view></router-view>
+        <keep-alive include='dataDetail'> 
+            <!-- 多个页面 -->
+            <!-- :include="['basicInfo', 'infoWarning' ,'dynamic']" -->
+            <router-view></router-view>
+        </keep-alive>
         <loading v-model="isLoading"></loading>
     </div>
 </template>

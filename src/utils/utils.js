@@ -181,9 +181,6 @@ export function formatDate (date, fmt) {
     return fmt;
 }
 
-function padLeftZero (str) {
-    return ('00' + str).substr(str.length);
-}
 export function debounce (method, delay) {
     let timer = null;
     return function () {
@@ -196,3 +193,6 @@ export function debounce (method, delay) {
     };
 }
 
+function padLeftZero (str) {
+    return ('00' + str).substr(str.length);
+}
