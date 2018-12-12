@@ -138,3 +138,26 @@ Vue.filter('imgLazy', function (src) {
 Vue.filter('imgHandler', function (src) {
     return src.replace(/,jpg/g, '.jpg');
 });
+// 根据时间远近显示不同阶级
+Vue.filter('daysBefore', function (str) {
+    let dateNow = new Date().getTime();
+    let dateLast = new Date(str).getTime();
+    let dateMinus = dateNow - dateLast;
+    let resultDate = '';
+    if ((dateMinus / 1000) < 1) {
+        resultDate = '刚刚';
+    } else if ((dateMinus / 1000) < 60 && (dateMinus / 1000) >= 1) {
+        resultDate = parseInt(dateMinus / 1000) + '秒前';
+    } else if ((dateMinus / 1000) >= 60 && (dateMinus / 1000 / 60) < 60) {
+        resultDate = parseInt(dateMinus / 1000 / 60) + '分钟前';
+    } else if ((dateMinus / 1000 / 60) >= 60 && (dateMinus / 1000 / 60 / 60) < 24) {
+        resultDate = parseInt(dateMinus / 1000 / 60 / 60) + '小时前';
+    } else if ((dateMinus / 1000 / 60 / 60) >= 24 && (dateMinus / 1000 / 60 / 60 / 24) < 7) {
+        resultDate = parseInt(dateMinus / 1000 / 60 / 60 / 24) + '天前';
+    } else if ((dateMinus / 1000 / 60 / 60 / 24 / 7) >= 1 && (dateMinus / 1000 / 60 / 60 / 24 / 7) < 2) {
+        resultDate = '一周前';
+    } else {
+        resultDate = formatDate(new Date(str), 'yyyy-MM-dd');
+    }
+    return resultDate;
+});
