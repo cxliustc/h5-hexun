@@ -32,9 +32,13 @@ export const ls = {
     // 设置cookie
     setCookie (key, value, time) {
         if (time) {
-            let date = new Date();
-            date.setDate(date.getDate() + time);
-            document.cookie = key + '=' + value + ';expires=' + date.toGMTString() + ';path=/';
+            if (typeof time === 'object') {
+                document.cookie = key + '=' + value + ';expires=' + time.toGMTString() + ';path=/';
+            } else {
+                let date = new Date();
+                date.setDate(date.getDate() + time);
+                document.cookie = key + '=' + value + ';expires=' + date.toGMTString() + ';path=/';
+            }
         } else {
             document.cookie = key + '=' + value + ';path=/';
         }
@@ -42,13 +46,14 @@ export const ls = {
     // 获取cookie
     getCookie (key) {
         let array = document.cookie.split('; ');
+        let keyValue = '';
         array.map(val => {
             let [valKey, value] = val.split('=');
             if (valKey === key) {
-                return decodeURI(value);
+                keyValue = decodeURI(value);
             }
         });
-        return '';
+        return keyValue;
     }
 };
 
@@ -155,7 +160,30 @@ export function getTime (p) {
     }
     return year + '-' + month + '-' + date;
 }
+// 时间戳格式化
+export function formatDate (date, fmt) {
+    if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length));
+    }
+    let o = {
+        'M+': date.getMonth() + 1,
+        'd+': date.getDate(),
+        'h+': date.getHours(),
+        'm+': date.getMinutes(),
+        's+': date.getSeconds()
+    };
+    for (let k in o) {
+        if (new RegExp(`(${k})`).test(fmt)) {
+            let str = o[k] + '';
+            fmt = fmt.replace(RegExp.$1, RegExp.$1.length === 1 ? str : padLeftZero(str));
+        }
+    }
+    return fmt;
+}
 
+function padLeftZero (str) {
+    return ('00' + str).substr(str.length);
+}
 export function debounce (method, delay) {
     let timer = null;
     return function () {
