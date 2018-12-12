@@ -1,5 +1,5 @@
 import InfoDetail from '../views/info/infoDetail';
 export default [{
-    path: '/infoDetail/:informationId/:suffix',
+    path: '/infoDetail/:informationId/infodetail',
     component: InfoDetail
 }];

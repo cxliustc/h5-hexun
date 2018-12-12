@@ -14,7 +14,7 @@ export default {
     props: ['isDynamicname', 'authorName'],
     methods: {
         goBack () {
-            this.$router.push({name: 'master', params: {id: '参数'}});
+            this.$router.go(-1);// 返回上一层
         }
     }
 };
