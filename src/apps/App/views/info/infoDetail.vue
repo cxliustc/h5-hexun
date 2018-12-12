@@ -136,7 +136,7 @@
     </div>
 </template>
 <script>
-import apis from '@/apps/APP/apis';
+import apis from '@/apps/App/apis';
 import { getTime, ls } from 'UTILS/utils';
 import { isPhone } from 'UTILS/StringUtil';
 import chart from 'vue-echarts';
