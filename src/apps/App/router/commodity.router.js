@@ -1,5 +1,5 @@
 import Commodity from '../views/commodity';
 export default [{
-    path: '/commodity',
+    path: '/h5-hexun/commodity',
     component: Commodity
 }];
