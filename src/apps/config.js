@@ -10,7 +10,7 @@ import 'COMPONENTS';
 
 import httpConfig from 'UTILS/httpConfig';
 import 'UTILS/filters';
-import {isPrd, judeType} from 'UTILS/utils';
+import {isPrd, judeType, getIn} from 'UTILS/utils';
 
 import {clearRequest} from 'UTILS/middlewares';
 import {sync} from 'vuex-router-sync';
@@ -18,9 +18,13 @@ import {sync} from 'vuex-router-sync';
 import 'vux/src/styles/reset.less';
 import '../common/index.less';
 import '../assets/icon/iconfont.css';
-
 export let Router = null;
 
+Vue.mixin({
+    methods: {
+        getIn
+    }
+});
 Vue.use(Vuex);
 // 开发环境下的vuex的logger
 const logger = createLogger({
