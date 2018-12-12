@@ -86,13 +86,9 @@ export default {
             });
         },
         // 点击股指跳转
-        stock: function () {
-
-        },
+        stock: function () {},
         // 点击跳转详情页
-        details: function () {
-
-        },
+        details: function () {},
         // 渲染页面
         init: function () {
             // 股指渲染
