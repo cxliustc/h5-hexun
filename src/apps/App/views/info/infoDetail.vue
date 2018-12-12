@@ -1,135 +1,147 @@
 <template>
-    <div class="wrapper" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
-        <!-- 文章遮罩 -->
-        <div class="mainMask" v-show="showMainMask" @click="showBomb = true">
-            <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>
-        </div>
-        <!-- 验证码弹出层 -->
-        <div class='VerificationCodeWrap' v-show="showBomb">
-            <div class="VerificationCodeContent">
-                <div>
-                    <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号">
-                </div>
-                <div>
-                    <input type="text" class="codeBox" v-model='codeNum' @input='codeNum=codeNum.replace(/[^\d\.]/g,"")' placeholder="请输入验证码">
-                    <span class="getCode" :class='{"isGetCode" : isGetCode}' @click='getVerificationCode(phoneNum)'>{{isGetCode ? `已发送(${CountDown}S)` : '发送验证码'}}</span>
-                </div>
-                <button class="subCode" @click='subPhone()'>提交</button>
+    <div class="wrap" :class='{"overflowH":showMainMask}'>
+        <infoHeader :is-dynamicname='isDynamicname' :author-name='infoDetail.authorName|strLimit(6)' ></infoHeader>
+        <div class="infoDetailWrapper" @scroll="modifyTitle($event)" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
+            <!-- 文章遮罩 -->
+            <div class="mainMask" v-show="showMainMask" @click="getAllDetail()">
+                <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>
             </div>
-            <button class="VerificationClose" @click="showBomb = false"><img src="../../assets/images/close.png" alt=""></button>
-        </div>
-        <!-- 正文 -->
-        <div class='title'>{{infoDetail.title}}</div>
-        <div class="content">
-            <div class="authorInfo">
-                <div>
-                    <span  class='author_name' >{{infoDetail.authorName|strLimit(6)}}</span>&nbsp;
-                    <span class='author_time'>{{infoDetail.releaseDate|translateDate}}</span>
+            <!-- 验证码弹出层 -->
+            <div class='VerificationCodeWrap' v-show="showBomb">
+                <div class="VerificationCodeContent">
+                    <div>
+                        <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号">
+                    </div>
+                    <div>
+                        <input type="text" class="codeBox" v-model='codeNum' @input='codeNum=codeNum.replace(/[^\d\.]/g,"")' placeholder="请输入验证码">
+                        <span class="getCode" :class='{"isGetCode" : isGetCode}' @click='getVerificationCode(phoneNum)'>{{isGetCode ? `已发送(${CountDown}S)` : '发送验证码'}}</span>
+                    </div>
+                    <button class="subCode" @click='subPhone()'>提交</button>
                 </div>
-                <div v-if='infoDetail.channelName === "研报"'>
-                    <a v-for='(item, index) in infoDetail.cmsInfoAttRes' :key="index" class='pdfLogo' id='pdfLogo' href='javascript:;' download='' @click='showPDF(item.attachmentName, item.attachmentPath)'>
-                        <p>{{item.attachmentName}}</p>
-                    </a>
-                </div>
-                <div class='guideIntrduction' v-if='infoDetail.isShowGeneral === "1" && infoDetail.channelCode !== "ZB"'>
-                    <p class='guideContent'>
-                        <span class='guide_logo'>导语：</span>{{infoDetail.general}}
-                    </p>
-                </div>
+                <button class="VerificationClose" @click="showBomb = false"><img src="../../assets/images/info/close.png" alt=""></button>
             </div>
-            <!-- 研报表格 -->
-            <div class="table" v-show='infoDetail.cmsInfoData && infoDetail.cmsInfoData.showTable === "1"'>
-                <p>{{infoDetail.cmsInfoData ? infoDetail.cmsInfoData.tableTitle : ''}}</p>
-                <div>
-                    <table class="info-table">
-                        <thead>
-                            <tr>
-                                <th>交期</th>
-                                <th>方向</th>
-                                <th>数量</th>
-                                <th>价格</th>
-                                <th>方向</th>
-                                <th>数量</th>
-                                <th>价格</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(item, index) in getTableData(infoDetail.cmsInfoData)" :key="index">
-                                <td>{{getTableText(item.deliveryTime)}}</td>
-                                <td>{{getTableText(item.buyDirection)}}</td>
-                                <td>{{getTableText(item.buyQuantity)}}</td>
-                                <td>{{getPrice(item.buyStartPrice, item.buyEndPrice)}}</td>
-                                <td>{{getTableText(item.sellDirection)}}</td>
-                                <td>{{getTableText(item.sellQuantity)}}</td>
-                                <td>{{getPrice(item.sellStartPrice, item.sellEndPrice)}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- 正文 -->
+            <div class='title'>{{infoDetail.title}}</div>
+            <div class="content">
+                <div class="authorInfo">
+                    <div>
+                        <span  class='author_name' >{{infoDetail.authorName|strLimit(6)}}</span>&nbsp;
+                        <span class='author_time'>{{infoDetail.releaseDate|translateDate}}</span>
+                    </div>
+                    <div v-if='infoDetail.channelName === "研报"'>
+                        <a v-for='(item, index) in infoDetail.cmsInfoAttRes' :key="index" class='pdfLogo' id='pdfLogo' href='javascript:;' download='' @click='showPDF(item.attachmentName, item.attachmentPath)'>
+                            <p>{{item.attachmentName}}</p>
+                        </a>
+                    </div>
+                    <div class='guideIntrduction' v-if='infoDetail.isShowGeneral === "1" && infoDetail.channelCode !== "ZB"'>
+                        <p class='guideContent'>
+                            <span class='guide_logo'>导语：</span>{{infoDetail.general}}
+                        </p>
+                    </div>
                 </div>
-                <p class="trade-time">交易数据更新于：{{infoDetail.cmsInfoData ? getUpdateTime(infoDetail.cmsInfoData.dataEndTime) : ''}}</p>
-            </div>
-            <!-- 研报图表 -->
-            <div class="chart-div" v-show='infoDetail.cmsInfoData && infoDetail.cmsInfoData.showChart === "1"'>
-                <p>{{infoDetail.cmsInfoData ? infoDetail.cmsInfoData.chartTitle : ''}}</p>
-                <chart id="canvas" :options="polar" :auto-resize = true></chart>
-            </div>
-            <div class="infoContent">
-                <span class='infoContent-html' :class="{'isIosG':isIos}" v-html="delBrInData(infoDetail.texHtml)"></span>
-                <span class='declare' v-if="infoDetail.isShowOrigin === '1'">来源：{{infoDetail.ext2}}</span>
-                <span class='declare' v-if="infoDetail.isShowDisclaimer === '1'">免责声明：本文非百联大宗原创，以上仅代表作者个人观点</span>
-                <span class='declare' v-if="infoDetail.isShowCopyright === '1'">版权声明：如需转载，请注明来自“百联大宗”</span>
-            </div>
-            <!-- 相关推荐 -->
-            <div class='infoRecommendation'>
-                <div class='recommedationTitle'>
-                    <span>
-                        <span class="colorMark"></span><p class='modelName'>相关推荐</p>
-                    </span>
+                <!-- 研报表格 -->
+                <div class="table" v-show='infoDetail.cmsInfoData && infoDetail.cmsInfoData.showTable === "1"'>
+                    <p>{{infoDetail.cmsInfoData ? infoDetail.cmsInfoData.tableTitle : ''}}</p>
+                    <div>
+                        <table class="info-table">
+                            <thead>
+                                <tr>
+                                    <th>交期</th>
+                                    <th>方向</th>
+                                    <th>数量</th>
+                                    <th>价格</th>
+                                    <th>方向</th>
+                                    <th>数量</th>
+                                    <th>价格</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in getTableData(infoDetail.cmsInfoData)" :key="index">
+                                    <td>{{getTableText(item.deliveryTime)}}</td>
+                                    <td>{{getTableText(item.buyDirection)}}</td>
+                                    <td>{{getTableText(item.buyQuantity)}}</td>
+                                    <td>{{getPrice(item.buyStartPrice, item.buyEndPrice)}}</td>
+                                    <td>{{getTableText(item.sellDirection)}}</td>
+                                    <td>{{getTableText(item.sellQuantity)}}</td>
+                                    <td>{{getPrice(item.sellStartPrice, item.sellEndPrice)}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="trade-time">交易数据更新于：{{infoDetail.cmsInfoData ? getUpdateTime(infoDetail.cmsInfoData.dataEndTime) : ''}}</p>
                 </div>
-                <div class='recommendationContent'>
-                    <ul>
-                        <li v-for="(item, index) in infoRecommendation" :key="index" @click='gotoRecommendation(item.infoId)'>
-                            <a href="">
-                                <!-- 单图 -->
-                                <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3">
-                                    <div class="left releative oneJpgLeft">
-                                        <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(30)}}</p>
-                                        <div class='subscript subscript1'>
+                <!-- 研报图表 -->
+                <div class="chart-div" v-show='infoDetail.cmsInfoData && infoDetail.cmsInfoData.showChart === "1"'>
+                    <p>{{infoDetail.cmsInfoData ? infoDetail.cmsInfoData.chartTitle : ''}}</p>
+                    <chart id="canvas" :options="polar" :auto-resize = true></chart>
+                </div>
+                <div class="infoContent">
+                    <span class='infoContent-html' :class="{'isIosG':isIos}" v-html="delBrInData(infoDetail.texHtml)"></span>
+                    <span class='declare' v-if="infoDetail.isShowOrigin === '1'">来源：{{infoDetail.ext2}}</span>
+                    <span class='declare' v-if="infoDetail.isShowDisclaimer === '1'">免责声明：本文非百联大宗原创，以上仅代表作者个人观点</span>
+                    <span class='declare' v-if="infoDetail.isShowCopyright === '1'">版权声明：如需转载，请注明来自“百联大宗”</span>
+                </div>
+                <!-- 相关推荐 -->
+                <div class='infoRecommendation'>
+                    <div class='recommedationTitle'>
+                        <span>
+                            <span class="colorMark"></span><p class='modelName'>相关推荐</p>
+                        </span>
+                    </div>
+                    <div class='recommendationContent'>
+                        <ul>
+                            <li v-for="(item, index) in infoRecommendation" :key="index" @click='gotoRecommendation(item.infoId)'>
+                                <a href="">
+                                    <!-- 单图 -->
+                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3">
+                                        <div class="left releative oneJpgLeft">
+                                            <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(30)}}</p>
+                                            <div class='subscript subscript1'>
+                                                <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
+                                                <span class='right'>{{item.releaseDate|translateDate}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="right">
+                                            <img class='dantu' v-if='item.cmsInfoAttList && item.cmsInfoAttList.length !==0 && !item.cmsInfoAttList[0].includes(".pdf")' :src='item.cmsInfoAttList[0]'/>
+                                        </div>
+                                    </div>
+                                    <!-- 三图 -->
+                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length >=3">
+                                        <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
+                                        <div class="santu clearfix">
+                                            <img v-if='!item.cmsInfoAttList[0].includes(".pdf")' :src="item.cmsInfoAttList[0]" alt="">
+                                            <img v-if='!item.cmsInfoAttList[1].includes(".pdf")' :src="item.cmsInfoAttList[1]" alt="">
+                                            <img v-if='!item.cmsInfoAttList[2].includes(".pdf")' :src="item.cmsInfoAttList[2]" alt="">
+                                        </div>
+                                        <div class='subscript subscript2'>
                                             <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
                                             <span class='right'>{{item.releaseDate|translateDate}}</span>
                                         </div>
                                     </div>
-                                    <div class="right">
-                                        <img class='dantu' v-if='item.cmsInfoAttList && item.cmsInfoAttList.length !==0 && !item.cmsInfoAttList[0].includes(".pdf")' :src='item.cmsInfoAttList[0]'/>
+                                    <!-- 无图 -->
+                                    <div class="clearfix" v-if="item.cmsInfoAttList === null">
+                                        <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
+                                        <div class='subscript subscript2'>
+                                            <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
+                                            <span class='right'>{{item.releaseDate|translateDate}}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- 三图 -->
-                                <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length >=3">
-                                    <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
-                                    <div class="santu clearfix">
-                                        <img v-if='!item.cmsInfoAttList[0].includes(".pdf")' :src="item.cmsInfoAttList[0]" alt="">
-                                        <img v-if='!item.cmsInfoAttList[1].includes(".pdf")' :src="item.cmsInfoAttList[1]" alt="">
-                                        <img v-if='!item.cmsInfoAttList[2].includes(".pdf")' :src="item.cmsInfoAttList[2]" alt="">
-                                    </div>
-                                    <div class='subscript subscript2'>
-                                        <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
-                                        <span class='right'>{{item.releaseDate|translateDate}}</span>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                </div> 
+                                </a>
+                            </li>
+                        </ul>
+                    </div> 
+                </div>
             </div>
         </div>
     </div>
 </template>
 <script>
 import apis from '@/apps/APP/apis';
-import { getTime } from 'UTILS/utils';
+import { getTime, ls } from 'UTILS/utils';
 import { isPhone } from 'UTILS/StringUtil';
 import chart from 'vue-echarts';
 import { setTimeout } from 'timers';
+import infoHeader from '../../components/infoHeader/infoHeader';
 export default {
     name: 'infodetail',
     data () {
@@ -143,7 +155,8 @@ export default {
             isGetCode: false, // 验证码是否发送
             CountDown: 60, // 倒计时
             showMainMask: true, // 文章遮罩
-            showBomb: true, // 短信验证弹框
+            showBomb: false, // 短信验证弹框
+            isDynamicname: true, // 下滑后动态显示头部标题
             polar: {// 研报图表配置
                 tooltip: {
                     trigger: 'item',
@@ -239,7 +252,8 @@ export default {
         };
     },
     components: {
-        chart
+        chart,
+        infoHeader
     },
     created () {
         // 资讯详情数据拿取
@@ -273,10 +287,14 @@ export default {
                 });
             }
         });
+        // 埋点
+        apis.info.buryingPoint({url: 'infoDetail'});
         // 判断ios，android
         this.getMobilesType();
         // 图表字体设置
         this.setPolarFontSize();
+        // 判断是否存储手机验证cookie
+        this.showMainMask = ls.getCookie('HX_AUTH_CHECK') !== 'checked';
     },
     mounted () {
     },
@@ -400,6 +418,7 @@ export default {
                         }
                     };
                     apis.info.getVerificationCode(params).then((data) => {
+                        data = data.body;
                         if (data.success) {
                             this.isGetCode = true;
                             this.getCountDown();
@@ -417,23 +436,54 @@ export default {
         },
         // 提交手机号
         subPhone () {
-            this.showBomb = false;
             let params = {
                 user: {
                     mobile: this.phoneNum,
                     code: this.codeNum
                 }
             };
-            apis.info.submitCode(params).then((data) => {
-                if (data.success) {
-                    this.showBomb = false;
-                }
-            });
+            let expires = new Date();
+            expires = new Date((expires.getFullYear() + 50).toString());
+            if (isPhone(this.phoneNum)) {
+                apis.info.submitCode(params).then((data) => {
+                    data = data.body;
+                    if (data.success) {
+                        this.showMainMask = false;
+                        this.showBomb = false;
+                        ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
+                    } else {
+                        this.$vux.toast.show({
+                            text: '验证码错误',
+                            type: 'text',
+                            width: '2rem',
+                            position: 'bottom'
+                        });
+                    }
+                });
+            } else {
+                this.$vux.toast.show({
+                    text: '请输入正确手机号',
+                    type: 'text',
+                    width: '2rem',
+                    position: 'bottom'
+                });
+            }
+        },
+        // 获取全文
+        getAllDetail () {
+            this.showBomb = true;
+            // 埋点
+            apis.info.buryingPoint({url: 'viewArticle', event: 'clickButton'});
+        },
+        // 下滑更改标题
+        modifyTitle (e) {
+            let t = e.target;
+            this.isDynamicname = t.scrollTop === 0;
         }
     }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
 .clear {
     clear: both;
 }
@@ -449,6 +499,10 @@ export default {
 .overflowH{
     overflow: hidden!important;
 }
+.wrap{
+    height:100%;
+    overflow: auto;
+}
 #infoDetailBox {
     height:100%;
     overflow: scroll;
@@ -456,16 +510,18 @@ export default {
     -webkit-text-size-adjust: none;
     -webkit-overflow-scrolling: touch;
     background:#F2F2F2;
+    margin-top:44px;
     .mainMask{
         height:100px;
         width:100%;
         border-bottom:0.3rem solid #fff;
-        background:url(../../assets/images/maskMain.png) repeat-x bottom;
+        background:url(../../assets/images/info/maskMain.png) repeat-x bottom;
         background-size:1px 1rem;
         position: fixed;
         bottom: 0;
         left: 0;
         text-align: center;
+        z-index:3;
         span{
             font-size:12px;
             color:#EE5050;
@@ -481,6 +537,7 @@ export default {
         top:0;
         left:0;
         background:transparent;
+        z-index:3;
         &:before{
             content:'';
             background:#000;
@@ -496,7 +553,7 @@ export default {
             border:0;
             position: absolute;
             bottom:60px;                              
-            left:170px;
+            left:50%;
             margin-left:-11.3px;
             background: transparent;
             img{
@@ -511,10 +568,12 @@ export default {
             background: #FFFFFF;
             border: 1px solid #E2E2E2;
             border-radius: 8px;
-            top:219px;
-            left:45px;
+            top:50%;
+            left:50%;
+            margin-top:-114.5px;
+            margin-left:-143.5px;
             padding:34px 0 31px 28px;
-
+            z-index:6;
             .getCode{
                 display: inline-block;
                 width:88px;

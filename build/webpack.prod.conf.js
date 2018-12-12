@@ -35,7 +35,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env,
-      'ENV': process.argv[2].toString()
+      'ENV': process.argv[2] ? process.argv[2].toString() : 'pro'
     }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
@@ -107,19 +107,19 @@ var webpackConfig = merge(baseWebpackConfig, {
 if (config.build.productionGzip) {
   var CompressionWebpackPlugin = require('compression-webpack-plugin')
 
-  webpackConfig.plugins.push(
-    new CompressionWebpackPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: new RegExp(
-        '\\.(' +
-        config.build.productionGzipExtensions.join('|') +
-        ')$'
-      ),
-      threshold: 10240,
-      minRatio: 0.8
-    })
-  )
+  // webpackConfig.plugins.push(
+  //   new CompressionWebpackPlugin({
+  //     filename: '[path].gz[query]',
+  //     algorithm: 'gzip',
+  //     test: new RegExp(
+  //       '\\.(' +
+  //       config.build.productionGzipExtensions.join('|') +
+  //       ')$'
+  //     ),
+  //     threshold: 10240,
+  //     minRatio: 0.8
+  //   })
+  // )
 }
 
 if (config.build.bundleAnalyzerReport) {
