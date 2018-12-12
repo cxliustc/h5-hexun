@@ -6,14 +6,15 @@
             :listenScroll="true"
             :listenScrollEnd="true"
             ref="scroll"
+            @pullingDown="onPullingDown"
         >
         <div slot="list">
             <div id="box">
                 <ul id="stockIndex">
-                    <li v-for="(item, index) in stockindexlist" :key='index' :class='{color: item.stockIndexColor == -1 ? true : false}'>
+                    <li v-for="(item, index) in stockindexlist" :key='index' :class='[{backgroundcolor1: item.stockIndexColor == -1 ? true : false}, {backgroundcolor2: item.stockIndexColor == 0 ? true : false}]' @click="stock()">
                         <p>{{item.stockIndexName}}</p>
-                        <p>{{item.stockIndexPrice}}</p>
-                        <p><span>+11.65</span><span>{{item.stockIndexRate}}</span></p>
+                        <p>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
+                        <p><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
                     </li>
                 </ul>
                 <div class="bodyBox" v-for="(item, index) in classifylist" :key='index'>
@@ -25,29 +26,19 @@
                             <span>推荐股票</span>
                         </div>
                         <ul>
-                            <li>
-                                <div class="good">乙二醇</div>
+                            <li v-for="(item, index) in contentlist" :key='index' @click="details()">
+                                <div class="good">{{item.cmsHexunConfigSimpleVO.goodsName}}</div>
                                 <div class="spot">
-                                    <p>7800</p>
-                                    <p>+2.1%</p>
-                                    <p>610.00</p>
-                                    <p>+3.10%</p>
+                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
+                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
+                                    <p :class='[{color1: item.cmsQuoteVo.upsDownsFlag == -1 ? true : false}, {color2: item.cmsQuoteVo.upsDownsFlag == 0 ? true : false}]'>{{item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsSimpleSpotpriceVO.settlePrice}}</p>
+                                    <p :class='[{color1: item.cmsQuoteVo.upsDownsFlag == -1 ? true : false}, {color2: item.cmsQuoteVo.upsDownsFlag == 0 ? true : false}]'>{{item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallPer}}</p>
                                 </div>
                                 <div class="recommend">
-                                    <p>
-                                        <span>三圣股份</span>
-                                        <span>8.30</span>
-                                        <span>+1.97%</span>
-                                    </p>
-                                    <p>
-                                        <span>科顺股份</span>
-                                        <span>9.74</span>
-                                        <span>+10.06%</span>
-                                    </p>
-                                    <p>
-                                        <span>华新水泥</span>
-                                        <span>18.04</span>
-                                        <span>+0.50%</span>
+                                    <p v-for="(item1, index) in item.cmsStockList" :key='index'>
+                                        <span>{{item1.stockName}}</span>
+                                        <span :class='[{color3: item1.upsDownsFlag == -1 ? true : false}, {color4: item1.upsDownsFlag == 0 ? true : false}]'>{{item1.lastPrice}}</span>
+                                        <span :class='[{color3: item1.upsDownsFlag == -1 ? true : false}, {color4: item1.upsDownsFlag == 0 ? true : false}]'>{{item1.riseFallRate}}</span>
                                     </p>
                                 </div>
                             </li>
@@ -66,36 +57,73 @@ export default {
     data () {
         return {
             stockindexlist: [],
-            classifylist: []
+            classifylist: [],
+            contentlist: []
         };
     },
     components: {
         Scroll
     },
     methods: {
-        switchFn: function (item) {
+        // 点击列表选项
+        switchFn: function (item, patientia) {
             this.classifylist.forEach((item) => {
                 item.active = false;
             });
             item.active = true;
+            // console.log(item);
+            // console.log(patientia);
+            // 列表内容渲染
+            let params = {
+                'goodsCategoryId': item.goodsCategoryId === '' ? patientia : item.goodsCategoryId};
+            // console.log(params);
+            apis.commodity.contentdata(params).then((data) => {
+                data = data.body;
+                if (data.success) {
+                    this.contentlist = data.data;
+                    // console.log(this.contentlist);
+                }
+            });
+        },
+        // 点击股指跳转
+        stock: function () {
+
+        },
+        // 点击跳转详情页
+        details: function () {
+
+        },
+        // 渲染页面
+        init: function () {
+            // 股指渲染
+            apis.commodity.stockindexdata().then((data) => {
+                data = data.body;
+                if (data.success) {
+                    this.stockindexlist = data.data;
+                    // this.stockindexlist[0].stockIndexName = '';
+                    // this.stockindexlist[0].stockIndexColor = 0;
+                    // console.log(this.stockindexlist);
+                }
+            });
+            // 列表渲染
+            apis.commodity.classifydata().then((data) => {
+                data = data.body;
+                if (data.success) {
+                    this.classifylist = data.data;
+                    this.classifylist[0].active = true;
+                    // console.log(this.classifylist[0].goodsCategoryId);
+                    let patientia = this.classifylist[0].goodsCategoryId;
+                    this.switchFn(this.classifylist[0], patientia);
+                    this.$refs.scroll.forceUpdate();
+                }
+            });
+        },
+        onPullingDown: function () {
+            this.init();
         }
     },
     created () {
-        apis.commodity.stockindexdata().then((data) => {
-            data = data.body;
-            if (data.success) {
-                this.stockindexlist = data.data;
-                // console.log(this.stockindexlist);
-            }
-        });
-        apis.commodity.classifydata().then((data) => {
-            data = data.body;
-            if (data.success) {
-                this.classifylist = data.data;
-                this.classifylist[0].active = true;
-                // console.log(this.classifylist);
-            }
-        });
+        this.init();
     }
 };
 </script>
@@ -116,8 +144,11 @@ export default {
                 background-color: #EE5050;
                 border-radius: 5px;
                 padding-top: 10px;
-                &.color {
+                &.backgroundcolor1 {
                     background-color: #2EBA80;
+                }
+                &.backgroundcolor2 {
+                    background-color: #D0D0D0;
                 }
                 p:nth-child(1) {
                     font-size: 12px;
@@ -149,18 +180,17 @@ export default {
                     padding: 0 30px;
                     position: relative;
                     i {
-                        transform: rotate(-134deg);
                         position: absolute;
-                        top: 18px;
-                        left: 18px;
-                        width: 8px;
-                        height: 8px;
-                        border-bottom: 1px solid #EE4F50;
-                        border-right: 1px solid #EE4F50;
+                        top: 14px;
+                        left: 12px;
+                        width: 17px;
+                        height: 10px;
+                        background: url(../../assets/images/commodity-img/topup.png) no-repeat 0px 0px;
+                        background-size: 0.16rem;
                         &.arrow {
-                            transform: rotate(44deg) !important;
-                            top: 12px!important;
-                            left: 18px!important;
+                            transform: rotate(180deg);
+                            top: 14px!important;
+                            left: 12px!important;
                         }
                     }
                 }
@@ -169,7 +199,7 @@ export default {
                     overflow: hidden;
                     transition: all 300ms linear;
                     &.auto {
-                        max-height: 600px;
+                        max-height: 1200px;
                     }
                     .minHeader {
                         background-color: #F5F5F5;
@@ -198,8 +228,17 @@ export default {
                             }
                             .spot {
                                 float: left;
-                                width: 104px;
+                                width: 96px;
                                 padding-top: 9px;
+                                P {
+                                    color: #EE5050;
+                                    &.color1 {
+                                        color: #2EBA80;
+                                    }
+                                    &.color2 {
+                                        color: #D0D0D0;
+                                    }
+                                }
                                 p:nth-child(2n+1){
                                     font-size: 16px;
                                 }
@@ -218,16 +257,23 @@ export default {
                                     line-height: 30px;
                                     span {
                                         margin-right: 6px;
+                                        &.color3 {
+                                            color: #2EBA80;
+                                        }
+                                        &.color4 {
+                                            color: #D0D0D0;
+                                        }
                                     }
                                     span:nth-child(1) {
                                         font-size: 14px;
                                     }
                                     span:nth-child(2) {
                                         font-size: 12px;
+                                        color: #EE5050;
                                     }
                                     span:nth-child(3) {
                                         font-size: 12px;
-
+                                        color: #EE5050;
                                     }
                                 }
                             }
