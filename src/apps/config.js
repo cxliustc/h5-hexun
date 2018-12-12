@@ -83,6 +83,7 @@ export default function ({router = {}, stores, urlTables}) {
     sync(store, Router, {moduleName: 'RouteModule'});
 
     httpConfig(urlTables);
+    debugger
     new Vue({
         router: Router,
         render: c => c(App)
