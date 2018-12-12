@@ -50,7 +50,7 @@
     </scroll>
 </template>
 <script>
-import apis from '@/apps/APP/apis';
+import apis from '@/apps/App/apis';
 import Scroll from 'COMPONENTS/scroll';
 export default {
     name: 'commodity',
