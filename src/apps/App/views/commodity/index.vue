@@ -117,6 +117,8 @@ export default {
                     this.$refs.scroll.forceUpdate();
                 }
             });
+            // 埋点
+            apis.commodity.burying({url: 'productHomePage'});
         },
         onPullingDown: function () {
             this.init();
