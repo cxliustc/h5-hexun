@@ -1,6 +1,6 @@
 <template>
     <div class="pageHeader clearfix">
-        <img class="fl" src='../../assets/images/info/infoLeftArrow.png' />
+        <img class="fl" src='../../assets/images/info/infoLeftArrow.png' @click="goBack()" />
         <h1 class="fl" :class="{center:isDynamicname}">{{isDynamicname ? '新闻详情' : authorName}}</h1>
     </div>
 </template>
