@@ -61,6 +61,7 @@ function _timeout (req, next) {
 function handleReq (req, next) {
     req.headers.set('Content-Type', 'application/json;charset=utf-8');
     req.headers.set('api-ver', '5.26');
+    req.headers.set('clientInfo', 'H5');
     // req.headers.set('mimeType', 'multipart/form-data')
     // addToken(req);
     // debugger;

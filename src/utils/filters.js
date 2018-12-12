@@ -52,6 +52,32 @@ Vue.filter('countDown', function (str) {
         return countDownDay + '天' + countDownHour + '小时' + countDownMin + '分钟';
     }
 });
+// 时间处理
+Vue.filter('translateDate', function (str) {
+    let dateNow = new Date().getTime();
+    let dateLast = new Date(str).getTime();
+    let dateMinus = dateNow - dateLast;
+    let resultDate = '';
+    // console.log(dateMinus / 1000 / 60 / 60 / 24 / 7)
+    if ((dateMinus / 1000) < 1) {
+        resultDate = '刚刚';
+    } else if ((dateMinus / 1000) < 60 && (dateMinus / 1000) >= 1) {
+        resultDate = parseInt(dateMinus / 1000) + '秒前';
+    } else if ((dateMinus / 1000) >= 60 && (dateMinus / 1000 / 60) < 60) {
+        resultDate = parseInt(dateMinus / 1000 / 60) + '分钟前';
+    } else if ((dateMinus / 1000 / 60) >= 60 && (dateMinus / 1000 / 60 / 60) < 24) {
+        resultDate = parseInt(dateMinus / 1000 / 60 / 60) + '小时前';
+    } else if ((dateMinus / 1000 / 60 / 60) >= 24 && (dateMinus / 1000 / 60 / 60 / 24) < 7) {
+        resultDate = parseInt(dateMinus / 1000 / 60 / 60 / 24) + '天前';
+    } else if ((dateMinus / 1000 / 60 / 60 / 24 / 7) >= 1 && (dateMinus / 1000 / 60 / 60 / 24 / 7) < 2) {
+        resultDate = '一周前';
+    // } else if ((dateMinus / 1000 / 60 / 60 / 24 / 30) === 1) {
+    //     resultDate = '一个月前'
+    } else {
+        resultDate = formatDate(new Date(str), 'yyyy-MM-dd');
+    }
+    return resultDate;
+});
 // 取绝对值
 Vue.filter('numberFn', function (numberStr) {
     return Math.abs(numberStr);
@@ -84,6 +110,22 @@ Vue.filter('dateShow', function (dateStr) {
     } else {
         return countDownDay + '天' + countDownHour + '小时' + countDownMin + '分钟';
     }
+});
+Vue.filter('strLimit', function (str, num) {
+    if (!str) {
+        return;
+    }
+    let strArr = str.split('');
+    let strNew = '';
+    if (strArr.length > num) {
+        for (var i = 0; i < num; i++) {
+            strNew += strArr[i];
+        }
+        strNew += '...';
+    } else {
+        strNew = str;
+    }
+    return strNew;
 });
 // 处理图片
 Vue.filter('imgLazy', function (src) {
