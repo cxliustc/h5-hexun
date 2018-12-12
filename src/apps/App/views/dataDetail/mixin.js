@@ -60,7 +60,7 @@ export default {
                     keyword: this.keyword
                 }
             }).then(({data, pageCount}) => {
-                debugger;
+                // debugger;
                 if (this.count > pageCount || data.length === 0) {
                     this.$refs.scroll.forceUpdate(false);
                 } else {
