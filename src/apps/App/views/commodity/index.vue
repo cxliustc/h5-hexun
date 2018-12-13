@@ -89,10 +89,10 @@ export default {
         stock: function () {},
         // 点击跳转详情页
         details: function (item) {
-            console.log(item);
+            // console.log(item);
             this.$router.push({
                 name: 'dataDetail',
-                params: {id: item.cmsHexunConfigSimpleVO.id}
+                params: {id: item.cmsHexunConfigSimpleVO.id, name: 'dataDetail'}
             });
         },
         // 渲染页面
@@ -229,6 +229,10 @@ export default {
                                 line-height: 111px;
                                 font-size: 14px;
                                 width: 84px;
+                                text-overflow: ellipsis;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                padding-right: 5px;
                             }
                             .spot {
                                 float: left;
@@ -262,10 +266,10 @@ export default {
                                     span {
                                         margin-right: 6px;
                                         &.color3 {
-                                            color: #2EBA80;
+                                            color: #2EBA80!important;
                                         }
                                         &.color4 {
-                                            color: #D0D0D0;
+                                            color: #D0D0D0!important;
                                         }
                                     }
                                     span:nth-child(1) {
