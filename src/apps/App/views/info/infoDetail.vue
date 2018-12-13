@@ -588,6 +588,7 @@ export default {
                 color:#fff;
                 text-align: center;
                 line-height: 36px;
+                font-size:12px;
                 &.isGetCode{
                     background:#ddd;
                     color:#aaa;
