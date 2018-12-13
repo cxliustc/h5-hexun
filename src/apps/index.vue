@@ -3,7 +3,7 @@
         <keep-alive include='dataDetail'> 
             <!-- 多个页面 -->
             <!-- :include="['basicInfo', 'infoWarning' ,'dynamic']" -->
-            <router-view></router-view>
+            <router-view :key="key"></router-view>
         </keep-alive>
         <loading v-model="isLoading"></loading>
     </div>
@@ -23,7 +23,10 @@
         computed: {
             ...mapGetters({
                 'isLoading': 'system/isLoading'
-            })
+            }),
+            key () {
+                return this.$route.path + Math.random();
+            }
         }
     };
 </script>
