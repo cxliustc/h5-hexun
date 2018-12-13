@@ -305,9 +305,6 @@ export default {
                 channelMName: this.name
             }).then((result) => {
                 let {data, pageCount} = result.body;
-                console.log(this);
-                console.log('this.count:', this.count);
-                console.log('pageCount:', pageCount);
                 let cmsAppHomePageResList = data;
                 if (this.count > pageCount) {
                     this.$refs.scroll.forceUpdate(false);
