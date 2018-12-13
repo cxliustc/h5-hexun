@@ -506,7 +506,6 @@ export default {
 }
 .wrap{
     height:100%;
-    overflow: auto;
 }
 #infoDetailBox {
     height:100%;
@@ -588,6 +587,7 @@ export default {
                 color:#fff;
                 text-align: center;
                 line-height: 36px;
+                font-size:12px;
                 &.isGetCode{
                     background:#ddd;
                     color:#aaa;
