@@ -143,7 +143,7 @@ import chart from 'vue-echarts';
 import { setTimeout } from 'timers';
 import infoHeader from '../../components/infoHeader/infoHeader';
 export default {
-    name: 'infodetail',
+    name: 'infoDetail',
     data () {
         return {
             infoDetail: {}, // 详情数据
@@ -479,6 +479,11 @@ export default {
         modifyTitle (e) {
             let t = e.target;
             this.isDynamicname = t.scrollTop === 0;
+        }
+    },
+    watch: {
+        '$route' (to, from) {
+            this.$router.go(0);
         }
     }
 };
