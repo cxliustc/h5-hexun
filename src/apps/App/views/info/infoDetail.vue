@@ -480,11 +480,6 @@ export default {
             let t = e.target;
             this.isDynamicname = t.scrollTop === 0;
         }
-    },
-    watch: {
-        '$route' (to, from) {
-            this.$router.go(0);
-        }
     }
 };
 </script>
