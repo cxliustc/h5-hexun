@@ -117,23 +117,30 @@
                         </p>
                     </div>
                 </li>
+                 <li>
+                    <div v-show="noResultShow" class="noResult">
+                        <NoPriceResult></NoPriceResult>
+                    </div>
+                </li>
             </ul>
         </scroll>
     </div>
 </template>
 <script>
 import Scroll from 'COMPONENTS/scroll';
+import NoPriceResult from '../../../../components/noPriceResult';
 import mixin from './mixin';
 import chart from 'vue-echarts';
 import apis from '../../apis/index';
 export default {
     mixins: [mixin],
     components: {
-        chart, Scroll
+        chart, Scroll, NoPriceResult
     },
     name: 'dataDetail',
     data () {
         return {
+            noResultShow: false,
             infoList: [],
             polar: {
                 tooltip: {
@@ -174,6 +181,7 @@ export default {
                     {
                         name: '现货／期货',
                         type: 'value',
+                        // splitNumber: 6,
                         scale: true,
                         axisLabel: {
                             formatter: '{value}',
@@ -188,6 +196,7 @@ export default {
                     {
                         name: '股指',
                         type: 'value',
+                        // splitNumber: 6,
                         scale: true,
                         axisLabel: {
                             formatter: '{value}',
@@ -197,6 +206,9 @@ export default {
                         },
                         nameTextStyle: {
                             fontSize: 12
+                        },
+                        splitLine: {
+                            show: false
                         }
                     }
                 ],
@@ -277,7 +289,7 @@ export default {
                 if (!cmsAppHomePageResList || cmsAppHomePageResList.length === 0) {
                     this.noResultShow = true;
                     data = [];
-                } else {
+                    this.$refs.scroll.forceUpdate(false);
                 }
                 this.count = 2;
                 this.infoList = cmsAppHomePageResList;
@@ -291,8 +303,12 @@ export default {
                 pageNum: this.count,
                 pageSize: 10,
                 channelMName: this.name
-            }).then(({data, pageCount}) => {
-                let cmsAppHomePageResList = data.data;
+            }).then((result) => {
+                let {data, pageCount} = result.body;
+                console.log(this);
+                console.log('this.count:', this.count);
+                console.log('pageCount:', pageCount);
+                let cmsAppHomePageResList = data;
                 if (this.count > pageCount) {
                     this.$refs.scroll.forceUpdate(false);
                 } else {
