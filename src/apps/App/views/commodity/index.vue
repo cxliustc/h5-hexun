@@ -89,7 +89,7 @@ export default {
         stock: function () {},
         // 点击跳转详情页
         details: function (item) {
-            console.log(item);
+            // console.log(item);
             this.$router.push({
                 name: 'dataDetail',
                 params: {id: item.cmsHexunConfigSimpleVO.id, name: item.cmsHexunConfigSimpleVO.goodsName}
