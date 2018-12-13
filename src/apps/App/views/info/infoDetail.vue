@@ -506,7 +506,6 @@ export default {
 }
 .wrap{
     height:100%;
-    overflow: auto;
 }
 #infoDetailBox {
     height:100%;
