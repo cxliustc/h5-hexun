@@ -143,7 +143,7 @@ import chart from 'vue-echarts';
 import { setTimeout } from 'timers';
 import infoHeader from '../../components/infoHeader/infoHeader';
 export default {
-    name: 'infodetail',
+    name: 'infoDetail',
     data () {
         return {
             infoDetail: {}, // 详情数据
@@ -501,7 +501,6 @@ export default {
 }
 .wrap{
     height:100%;
-    overflow: auto;
 }
 #infoDetailBox {
     height:100%;
@@ -583,6 +582,7 @@ export default {
                 color:#fff;
                 text-align: center;
                 line-height: 36px;
+                font-size:12px;
                 &.isGetCode{
                     background:#ddd;
                     color:#aaa;

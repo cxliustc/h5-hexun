@@ -1,8 +1,10 @@
 import testRouter from './test.router';
-import dataRouter from './data.router';
+import commodity from './commodity.router';
 import infoRouter from './info.router';
+import dataRouter from './data.router';
 export default [
     ...testRouter,
-    ...dataRouter,
-    ...infoRouter
+    ...commodity,
+    ...infoRouter,
+    ...dataRouter
 ];
