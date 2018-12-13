@@ -93,7 +93,7 @@
                             <li v-for="(item, index) in infoRecommendation" :key="index" @click='gotoRecommendation(item.infoId)'>
                                 <a href="">
                                     <!-- 单图 -->
-                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3">
+                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3 && item.channelCode !== 'YB'">
                                         <div class="left releative oneJpgLeft">
                                             <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(30)}}</p>
                                             <div class='subscript subscript1'>
@@ -106,7 +106,7 @@
                                         </div>
                                     </div>
                                     <!-- 三图 -->
-                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length >=3">
+                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length >=3 && item.channelCode !== 'YB'">
                                         <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
                                         <div class="santu clearfix">
                                             <img v-if='!item.cmsInfoAttList[0].includes(".pdf")' :src="item.cmsInfoAttList[0]" alt="">
@@ -119,7 +119,7 @@
                                         </div>
                                     </div>
                                     <!-- 无图 -->
-                                    <div class="clearfix" v-if="item.cmsInfoAttList === null">
+                                    <div class="clearfix" v-if="item.cmsInfoAttList === null || item.channelCode === 'YB'">
                                         <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
                                         <div class='subscript subscript2'>
                                             <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
@@ -510,6 +510,7 @@ export default {
     -webkit-overflow-scrolling: touch;
     background:#F2F2F2;
     margin-top:44px;
+    padding-bottom:0.44rem;
     .mainMask{
         height:100px;
         width:100%;
@@ -799,6 +800,7 @@ export default {
             padding-top: 11px;
             box-sizing: border-box;
             background:#fff;
+            padding-bottom:29px;
             // border-bottom: 1px solid #e8e8e8;
             .declare {
                 display: block;
@@ -1197,8 +1199,6 @@ export default {
     }
 }
 .infoRecommendation {
-    position: relative;
-    top: 28%;
     clear: both;
     .recommedationTitle{
         background:#fff;

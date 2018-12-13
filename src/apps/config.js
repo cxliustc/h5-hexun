@@ -45,6 +45,7 @@ export default function ({router = {}, stores, urlTables}) {
 
     Router = new VueRouter({
         mode: 'history',
+        base: 'h5-hexun',
         routes: router.routes
     });
 
