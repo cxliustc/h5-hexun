@@ -1,5 +1,5 @@
 export function isPhone (phoneNum) {
-    let phone = /^1([38]\d|4[57]|5[0-35-9]|7[06-8]|8[89])\d{8}$/;
+    let phone = /^1[34578]\d{9}$/;
     if (!phone.test(phoneNum)) {
         return false;
     } else {
