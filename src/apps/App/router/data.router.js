@@ -1,6 +1,6 @@
 import DataDetail from '../views/dataDetail';
 export default [{
-    path: '/h5-hexun/dataDetail/:id/:name',
+    path: '/dataDetail/:id/:name',
     name: 'dataDetail',
     component: DataDetail
 }];
