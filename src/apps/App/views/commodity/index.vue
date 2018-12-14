@@ -29,16 +29,16 @@
                             <li v-for="(item, index) in contentlist" :key='index' @click="details(item)">
                                 <div class="good">{{item.cmsHexunConfigSimpleVO.goodsName}}</div>
                                 <div class="spot">
-                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
-                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
-                                    <p :class='[{color1: item.cmsQuoteVo.upsDownsFlag == -1 ? true : false}, {color2: item.cmsQuoteVo.upsDownsFlag == 0 ? true : false}]'>{{item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsSimpleSpotpriceVO.settlePrice}}</p>
-                                    <p :class='[{color1: item.cmsQuoteVo.upsDownsFlag == -1 ? true : false}, {color2: item.cmsQuoteVo.upsDownsFlag == 0 ? true : false}]'>{{item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallPer}}</p>
+                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
+                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1 ? true : false}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0 ? true : false}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
+                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1 ? true : false}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0 ? true : false}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsQuoteVo.settlePrice}}</p>
+                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1 ? true : false}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0 ? true : false}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsQuoteVo.riseFallPer}}</p>
                                 </div>
                                 <div class="recommend">
                                     <p v-for="(item1, index) in item.cmsStockList" :key='index'>
                                         <span>{{item1.stockName}}</span>
-                                        <span :class='[{color3: item1.upsDownsFlag == -1 ? true : false}, {color4: item1.upsDownsFlag == 0 ? true : false}]'>{{item1.lastPrice}}</span>
-                                        <span :class='[{color3: item1.upsDownsFlag == -1 ? true : false}, {color4: item1.upsDownsFlag == 0 ? true : false}]'>{{item1.riseFallRate}}</span>
+                                        <span :class='[{color3: item1.upsDownsFlag && item1.upsDownsFlag == -1 ? true : false}, {color4: item1.upsDownsFlag && item1.upsDownsFlag == 0 ? true : false}]'>{{item1.lastPrice}}</span>
+                                        <span :class='[{color3: item1.upsDownsFlag && item1.upsDownsFlag == -1 ? true : false}, {color4: item1.upsDownsFlag && item1.upsDownsFlag == 0 ? true : false}]'>{{item1.riseFallRate}}</span>
                                     </p>
                                 </div>
                             </li>
@@ -58,7 +58,23 @@ export default {
         return {
             stockindexlist: [],
             classifylist: [],
-            contentlist: []
+            contentlist: [],
+            contentobj: [{
+                stockName: '--',
+                lastPrice: '--',
+                riseFallRate: '--',
+                upsDownsFlag: null
+            }, {
+                stockName: '--',
+                lastPrice: '--',
+                riseFallRate: '--',
+                upsDownsFlag: null
+            }, {
+                stockName: '--',
+                lastPrice: '--',
+                riseFallRate: '--',
+                upsDownsFlag: null
+            }]
         };
     },
     components: {
@@ -81,6 +97,15 @@ export default {
                 data = data.body;
                 if (data.success) {
                     this.contentlist = data.data;
+                    if (this.contentlist) {
+                        for (var i = 0; i < this.contentlist.length; i++) {
+                            if (this.contentlist[i].cmsStockList === null) {
+                                this.contentlist[i].cmsStockList = this.contentobj;
+                            }
+                            // console.log(this.contentobj);
+                            // console.log(this.contentlist);
+                        }
+                    }
                     // console.log(this.contentlist);
                 }
             });
@@ -203,7 +228,7 @@ export default {
                     overflow: hidden;
                     transition: all 300ms linear;
                     &.auto {
-                        max-height: 1200px;
+                        max-height: 612px;
                     }
                     .minHeader {
                         background-color: #F5F5F5;
@@ -216,13 +241,13 @@ export default {
                             margin-right: 58px;
                         }
                         span:nth-child(2) {
-                            margin-right: 46px;
+                            margin-right: 33px;
                         }
                     }
                     ul {
                         li {
                             height: 111px;
-                            padding: 0 15px;
+                            padding: 0 0 0 15px;
                             border-bottom: 1px solid #F6F6F6;
                             .good {
                                 float: left;
@@ -236,7 +261,7 @@ export default {
                             }
                             .spot {
                                 float: left;
-                                width: 96px;
+                                width: 90px;
                                 padding-top: 9px;
                                 P {
                                     color: #EE5050;
@@ -264,7 +289,7 @@ export default {
                                     height: 30px;
                                     line-height: 30px;
                                     span {
-                                        margin-right: 6px;
+                                        margin-right: 4px;
                                         &.color3 {
                                             color: #2EBA80!important;
                                         }
@@ -274,6 +299,8 @@ export default {
                                     }
                                     span:nth-child(1) {
                                         font-size: 14px;
+                                        display: inline-block;
+                                        width: 56px;
                                     }
                                     span:nth-child(2) {
                                         font-size: 12px;
@@ -282,6 +309,7 @@ export default {
                                     span:nth-child(3) {
                                         font-size: 12px;
                                         color: #EE5050;
+                                        margin-right: 0px;
                                     }
                                 }
                             }
