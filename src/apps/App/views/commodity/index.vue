@@ -228,7 +228,7 @@ export default {
                     overflow: hidden;
                     transition: all 300ms linear;
                     &.auto {
-                        max-height: 612px;
+                        max-height: 3.56rem;
                     }
                     .minHeader {
                         background-color: #F5F5F5;
@@ -300,7 +300,7 @@ export default {
                                     span:nth-child(1) {
                                         font-size: 14px;
                                         display: inline-block;
-                                        width: 56px;
+                                        width: 58px;
                                     }
                                     span:nth-child(2) {
                                         font-size: 12px;
