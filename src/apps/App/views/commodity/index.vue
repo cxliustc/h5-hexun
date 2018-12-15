@@ -3,8 +3,6 @@
             :scrollbar="true"
             :pullUpLoad="false"
             :pullDownRefresh="true"
-            :listenScroll="true"
-            :listenScrollEnd="true"
             ref="scroll"
             @pullingDown="onPullingDown"
         >
@@ -104,8 +102,8 @@ export default {
                                 this.contentlist[i].cmsStockList = this.contentobj;
                             }
                         }
-                        console.log(this.contentlist);
-                        item.maxHeight = `${1.2 * this.contentlist.length}rem`;
+                        // console.log(this.contentlist);
+                        item.maxHeight = `${1.5 * this.contentlist.length}rem`;
                     }
                 }
             });
@@ -134,12 +132,12 @@ export default {
             apis.commodity.classifydata().then((data) => {
                 data = data.body;
                 if (data.success) {
+                    this.$refs.scroll.forceUpdate();
                     this.classifylist = data.data;
                     this.classifylist[0].active = true;
                     // console.log(this.classifylist[0].goodsCategoryId);
                     let patientia = this.classifylist[0].goodsCategoryId;
                     this.switchFn(this.classifylist[0], patientia);
-                    this.$refs.scroll.forceUpdate();
                 }
             });
             // 埋点
@@ -151,16 +149,19 @@ export default {
     },
     created () {
         this.init();
+    },
+    mounted () {
+        let ref = this.$refs;
+        setTimeout(function () { ref.scroll.refresh(); }, 300);
+    },
+    updated () {
+        let ref = this.$refs;
+        setTimeout(function () { ref.scroll.refresh(); }, 300);
     }
 };
 </script>
 <style lang="less">
-    .blockNone {
-        display: none;
-    }
     #box {
-        height: 100%;
-        overflow: auto;
         #stockIndex {
             padding: 10px 15px;
             display: flex;
