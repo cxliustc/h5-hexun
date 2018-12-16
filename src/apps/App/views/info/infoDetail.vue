@@ -28,7 +28,7 @@
                         <span  class='author_name' >{{infoDetail.authorName|strLimit(6)}}</span>&nbsp;
                         <span class='author_time'>{{infoDetail.releaseDate|translateDate}}</span>
                     </div>
-                    <div v-if='infoDetail.channelName === "研报"'>
+                    <div v-if='infoDetail.channelCode === "YB"'>
                         <a v-for='(item, index) in infoDetail.cmsInfoAttRes' :key="index" class='pdfLogo' id='pdfLogo' href='javascript:;' download='' @click='showPDF(item.attachmentName, item.attachmentPath)'>
                             <p>{{item.attachmentName}}</p>
                         </a>
@@ -95,7 +95,7 @@
                                     <!-- 单图 -->
                                     <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3 && item.channelCode !== 'YB'">
                                         <div class="left releative oneJpgLeft">
-                                            <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(30)}}</p>
+                                            <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(20)}}</p>
                                             <div class='subscript subscript1'>
                                                 <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
                                                 <span class='right'>{{item.releaseDate|translateDate}}</span>
@@ -107,7 +107,7 @@
                                     </div>
                                     <!-- 三图 -->
                                     <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length >=3 && item.channelCode !== 'YB'">
-                                        <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
+                                        <p class='recommendationTitle'>{{item.title|strLimit(20)}}</p>
                                         <div class="santu clearfix">
                                             <img v-if='!item.cmsInfoAttList[0].includes(".pdf")' :src="item.cmsInfoAttList[0]" alt="">
                                             <img v-if='!item.cmsInfoAttList[1].includes(".pdf")' :src="item.cmsInfoAttList[1]" alt="">
@@ -120,7 +120,7 @@
                                     </div>
                                     <!-- 无图 -->
                                     <div class="clearfix" v-if="item.cmsInfoAttList === null || item.channelCode === 'YB'">
-                                        <p class='recommendationTitle'>{{item.title|strLimit(30)}}</p>
+                                        <p class='recommendationTitle'>{{item.title|strLimit(20)}}</p>
                                         <div class='subscript subscript2'>
                                             <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
                                             <span class='right'>{{item.releaseDate|translateDate}}</span>
@@ -479,6 +479,20 @@ export default {
         modifyTitle (e) {
             let t = e.target;
             this.isDynamicname = t.scrollTop === 0;
+        },
+        // 研报附件
+        showPDF: function (name, url) {
+            var u = navigator.userAgent;
+            var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; // android终端或者uc浏览器
+            var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // ios终端
+            if (isAndroid) {
+                var pdfLogo = document.getElementById('pdfLogo');
+                pdfLogo.href = url;
+                pdfLogo.download = name;
+                pdfLogo.click();
+            } else if (isiOS) {
+                window.open(url);
+            }
         }
     }
 };
@@ -638,6 +652,7 @@ export default {
         line-height:35px;
         padding: 14px 15px 5px;
         background:#fff;
+        font-weight: 600;
     }
     .content {
         a {
@@ -721,7 +736,7 @@ export default {
                 position: relative;
                 margin-top: 28px;
                 padding-bottom: 30px;
-                font-size: 18px;
+                font-size: 16px;
                 color:#393939;
                 line-height: 32.4px;
                 .guideContent {
