@@ -27,10 +27,10 @@
                             <li v-for="(item, index) in contentlist" :key='index' @click="details(item)">
                                 <div class="good">{{item.cmsHexunConfigSimpleVO.goodsName}}</div>
                                 <div class="spot">
-                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
-                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
-                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsQuoteVo.settlePrice}}</p>
-                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsQuoteVo.riseFallPer}}</p>
+                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}, {color3: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 1}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
+                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}, {color3: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 1}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
+                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}, {color3: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 1}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsQuoteVo.settlePrice}}</p>
+                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}, {color3: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 1}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsQuoteVo.riseFallPer}}</p>
                                 </div>
                                 <div class="recommend">
                                     <p v-for="(item1, index) in item.cmsStockList" :key='index'>
@@ -143,6 +143,7 @@ export default {
             // 埋点
             apis.commodity.burying({url: 'productHomePage'});
         },
+        // 下拉刷新
         onPullingDown: function () {
             this.init();
         }
@@ -260,12 +261,15 @@ export default {
                                 width: 90px;
                                 padding-top: 9px;
                                 P {
-                                    color: #EE5050;
+                                    color: #D0D0D0;
                                     &.color1 {
                                         color: #2EBA80;
                                     }
                                     &.color2 {
                                         color: #D0D0D0;
+                                    }
+                                    &.color3 {
+                                        color: #EE5050;
                                     }
                                 }
                                 p:nth-child(2n+1){
