@@ -28,7 +28,7 @@
                         <span  class='author_name' >{{infoDetail.authorName|strLimit(6)}}</span>&nbsp;
                         <span class='author_time'>{{infoDetail.releaseDate|translateDate}}</span>
                     </div>
-                    <div v-if='infoDetail.channelName === "研报"'>
+                    <div v-if='infoDetail.channelCode === "YB"'>
                         <a v-for='(item, index) in infoDetail.cmsInfoAttRes' :key="index" class='pdfLogo' id='pdfLogo' href='javascript:;' download='' @click='showPDF(item.attachmentName, item.attachmentPath)'>
                             <p>{{item.attachmentName}}</p>
                         </a>
