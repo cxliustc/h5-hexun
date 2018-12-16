@@ -37,6 +37,7 @@ export default {
         letter-spacing: 0.44px;
         height:44px;
         line-height: 44px;
+        font-weight:600;
         &.center{
             text-align: center;
             font-size:17px;
