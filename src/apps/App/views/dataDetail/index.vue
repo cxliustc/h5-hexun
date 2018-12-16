@@ -89,7 +89,7 @@
                 </li>
                 <li v-for="(item, index) in infoList" :key="index" @click='goToDetail(item.infoId)'>
                     <!-- 1张图 -->
-                    <div class='clearfix detail' v-if="getIn(['cmsInfoAttList'], item) && getIn(['cmsInfoAttList'], item).length === 1">
+                    <div class='clearfix detail' v-if="getIn(['channelCode'],item) !=='YB' && getIn(['cmsInfoAttList'], item) && getIn(['cmsInfoAttList'], item).length === 1">
                         <div class="left">
                             <p class="title">
                                 {{getIn(['title'], item)}}
@@ -104,13 +104,23 @@
                         </div>
                     </div>
                     <!-- 无图或者大于1张图 -->
-                    <div class='clearfix detail' v-if="!getIn(['cmsInfoAttList'], item) || getIn(['cmsInfoAttList'], item).length > 1">
+                    <div class='clearfix detail' v-if="getIn(['channelCode'],item) !=='YB' &&(!getIn(['cmsInfoAttList'], item) || getIn(['cmsInfoAttList'], item).length > 1 || getIn(['cmsInfoAttList'], item).length === 0)">
                         <p class="title">
                             {{getIn(['title'], item)}}
                         </p>
                         <div class="images">
                             <img v-for='(el, ind) in getIn(["cmsInfoAttList"], item)' :key='ind' :src="el" alt="">
                         </div>
+                        <p class="timeAndSource clearfix">
+                            <span class="source">{{getIn(['author'], item)}}</span>
+                            <span class="time">{{getIn(['releaseDate'], item) | daysBefore}}</span>
+                        </p>
+                    </div>
+                    <!-- 有附件时，不显示 -->
+                    <div class='clearfix detail' v-if="getIn(['channelCode'],item) ==='YB'">
+                        <p class="title">
+                            {{getIn(['title'], item)}}
+                        </p>
                         <p class="timeAndSource clearfix">
                             <span class="source">{{getIn(['author'], item)}}</span>
                             <span class="time">{{getIn(['releaseDate'], item) | daysBefore}}</span>
@@ -305,9 +315,6 @@ export default {
                 channelMName: this.name
             }).then((result) => {
                 let {data, pageCount} = result.body;
-                console.log(this);
-                console.log('this.count:', this.count);
-                console.log('pageCount:', pageCount);
                 let cmsAppHomePageResList = data;
                 if (this.count > pageCount) {
                     this.$refs.scroll.forceUpdate(false);
