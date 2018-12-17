@@ -93,7 +93,7 @@
                             <li v-for="(item, index) in infoRecommendation" :key="index" @click='gotoRecommendation(item.infoId)'>
                                 <a href="">
                                     <!-- 单图 -->
-                                    <div class="clearfix" v-if="item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3 && item.channelCode !== 'YB'">
+                                    <div class="clearfix" v-if="item.cmsInfoAttList.length !== 0 &&item.cmsInfoAttList !== null &&item.cmsInfoAttList.length <3 && item.channelCode !== 'YB'">
                                         <div class="left releative oneJpgLeft">
                                             <p class='recommendationTitle recommendationTitle1'>{{item.title|strLimit(20)}}</p>
                                             <div class='subscript subscript1'>
@@ -119,7 +119,7 @@
                                         </div>
                                     </div>
                                     <!-- 无图 -->
-                                    <div class="clearfix" v-if="item.cmsInfoAttList === null || item.channelCode === 'YB'">
+                                    <div class="clearfix" v-if="item.cmsInfoAttList.length === 0 || item.channelCode === 'YB'">
                                         <p class='recommendationTitle'>{{item.title|strLimit(20)}}</p>
                                         <div class='subscript subscript2'>
                                             <span class='left' style='margin-right:0.12rem;'>{{item.author|strLimit(6)}}</span>
