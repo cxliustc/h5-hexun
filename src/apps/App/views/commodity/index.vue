@@ -269,7 +269,7 @@ export default {
                                         color: #2EBA80;
                                     }
                                     &.color2 {
-                                        color: #6A6A6A;
+                                        color: #333333;
                                     }
                                     &.color3 {
                                         color: #EE5050;
@@ -297,7 +297,7 @@ export default {
                                             color: #2EBA80!important;
                                         }
                                         &.color4 {
-                                            color: #6A6A6A!important;
+                                            color: #333333!important;
                                         }
                                     }
                                     span:nth-child(1) {
