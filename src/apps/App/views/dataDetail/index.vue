@@ -134,9 +134,7 @@
                 </li>
             </ul>
         </scroll>
-        <div class="service">
-            <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417"></a>
-        </div>
+        <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a>
     </div>
 </template>
 <script>
@@ -553,16 +551,15 @@ export default {
     }
     
 }
-.service {
-    position: fixed;
-    bottom: 16px;
-    right: 16px;
-    a {
+.CustomerService{
+        background:url(../../assets/images/CustomerService.png) no-repeat;
+        height:55px;
+        width:55px;
+        background-size:0.55rem;
         display: block;
-        height: 60px;
-        width: 265px;
-        background: url(../../assets/images/commodity-img/kefu.png) no-repeat 0px 0px;
-        background-size: 2.65rem;
+        position:fixed;
+        bottom:26px;
+        right:16px;
+        z-index:10;
     }
-}
 </style>
