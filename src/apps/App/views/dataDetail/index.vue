@@ -134,6 +134,9 @@
                 </li>
             </ul>
         </scroll>
+        <div class="service">
+            <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417"></a>
+        </div>
     </div>
 </template>
 <script>
@@ -549,5 +552,17 @@ export default {
         }
     }
     
+}
+.service {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    a {
+        display: block;
+        height: 60px;
+        width: 265px;
+        background: url(../../assets/images/commodity-img/kefu.png) no-repeat 0px 0px;
+        background-size: 2.65rem;
+    }
 }
 </style>
