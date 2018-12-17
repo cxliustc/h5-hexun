@@ -1,51 +1,56 @@
 <template>
-    <scroll
-            :scrollbar="true"
-            :pullUpLoad="false"
-            :pullDownRefresh="true"
-            ref="scroll"
-            @pullingDown="onPullingDown"
-        >
-        <div slot="list">
-            <div id="box">
-                <ul id="stockIndex">
-                    <li v-for="(item, index) in stockindexlist" :key='index' :class='[{backgroundcolor1: item.stockIndexColor == -1 ? true : false}, {backgroundcolor2: item.stockIndexColor == 0 ? true : false}]' @click="stock()">
-                        <p>{{item.stockIndexName}}</p>
-                        <p>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
-                        <p><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
-                    </li>
-                </ul>
-                <div class="bodyBox" v-for="(item, index) in classifylist" :key='index'>
-                    <div class="headline" @click="switchFn(item)"><i :class='{arrow: item.active}'></i>{{item.goodsCategoryName}}</div>
-                    <div :class="['contentBox', {'auto': item.active}]" :style="{'max-height': item.maxHeight}">
-                        <div class="minHeader">
-                            <span>商品</span>
-                            <span>现货/期货</span>
-                            <span>推荐股票</span>
+    <div>
+        <scroll
+                :scrollbar="true"
+                :pullUpLoad="false"
+                :pullDownRefresh="true"
+                ref="scroll"
+                @pullingDown="onPullingDown"
+            >
+            <div slot="list">
+                <div id="box">
+                    <ul id="stockIndex">
+                        <li v-for="(item, index) in stockindexlist" :key='index' :class='[{backgroundcolor1: item.stockIndexColor == -1 ? true : false}, {backgroundcolor2: item.stockIndexColor == 0 ? true : false}]' @click="stock()">
+                            <p>{{item.stockIndexName}}</p>
+                            <p>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
+                            <p><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
+                        </li>
+                    </ul>
+                    <div class="bodyBox" v-for="(item, index) in classifylist" :key='index'>
+                        <div class="headline" @click="switchFn(item)"><i :class='{arrow: item.active}'></i>{{item.goodsCategoryName}}</div>
+                        <div :class="['contentBox', {'auto': item.active}]" :style="{'max-height': item.maxHeight}">
+                            <div class="minHeader">
+                                <span>商品</span>
+                                <span>现货/期货</span>
+                                <span>推荐股票</span>
+                            </div>
+                            <ul>
+                                <li v-for="(item, index) in contentlist" :key='index' @click="details(item)">
+                                    <div class="good">{{item.cmsHexunConfigSimpleVO.goodsName}}</div>
+                                    <div class="spot">
+                                        <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}, {color3: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 1}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
+                                        <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}, {color3: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 1}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
+                                        <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}, {color3: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 1}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsQuoteVo.settlePrice}}</p>
+                                        <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}, {color3: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 1}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsQuoteVo.riseFallPer}}</p>
+                                    </div>
+                                    <div class="recommend">
+                                        <p v-for="(item1, index) in item.cmsStockList" :key='index'>
+                                            <span>{{item1.stockName}}</span>
+                                            <span :class='[{color3: item1.upsDownsFlag == -1}, {color4: item1.upsDownsFlag === 0}]'>{{item1.lastPrice}}</span>
+                                            <span :class='[{color3: item1.upsDownsFlag == -1}, {color4: item1.upsDownsFlag === 0}]'>{{item1.riseFallRate}}</span>
+                                        </p>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
-                        <ul>
-                            <li v-for="(item, index) in contentlist" :key='index' @click="details(item)">
-                                <div class="good">{{item.cmsHexunConfigSimpleVO.goodsName}}</div>
-                                <div class="spot">
-                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}, {color3: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 1}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.avg === null ? '--' : item.cmsSimpleSpotpriceVO.avg}}</p>
-                                    <p :class='[{color1: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == -1}, {color2: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 0}, {color3: item.cmsSimpleSpotpriceVO && item.cmsSimpleSpotpriceVO.upsDownsFlag == 1}]'>{{!item.cmsSimpleSpotpriceVO || item.cmsSimpleSpotpriceVO.riseFallRate === null ? '--' : item.cmsSimpleSpotpriceVO.riseFallRate}}</p>
-                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}, {color3: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 1}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.settlePrice === null ? '--' : item.cmsQuoteVo.settlePrice}}</p>
-                                    <p :class='[{color1: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == -1}, {color2: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 0}, {color3: item.cmsQuoteVo && item.cmsQuoteVo.upsDownsFlag == 1}]'>{{!item.cmsQuoteVo || item.cmsQuoteVo.riseFallPer === null ? '--' : item.cmsQuoteVo.riseFallPer}}</p>
-                                </div>
-                                <div class="recommend">
-                                    <p v-for="(item1, index) in item.cmsStockList" :key='index'>
-                                        <span>{{item1.stockName}}</span>
-                                        <span :class='[{color3: item1.upsDownsFlag == -1}, {color4: item1.upsDownsFlag === 0}]'>{{item1.lastPrice}}</span>
-                                        <span :class='[{color3: item1.upsDownsFlag == -1}, {color4: item1.upsDownsFlag === 0}]'>{{item1.riseFallRate}}</span>
-                                    </p>
-                                </div>
-                            </li>
-                        </ul>
                     </div>
                 </div>
             </div>
+        </scroll>
+        <div class="service">
+            <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417"></a>
         </div>
-    </scroll>
+    </div>
 </template>
 <script>
 import apis from '@/apps/App/apis';
@@ -319,6 +324,18 @@ export default {
                         }
                     }
                 }
+        }
+    }
+    .service {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        a {
+            display: block;
+            height: 60px;
+            width: 265px;
+            background: url(../../assets/images/commodity-img/kefu.png) no-repeat 0px 0px;
+            background-size: 2.65rem;
         }
     }
 </style>
