@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="chart">
-                        <chart width='100%' id="canvas" :options="polar"></chart>
+                        <chart id="canvas" :options="polar"></chart>
                     </div>
                     <div class="chartDesc clearfix">
                         <i class='blue'></i>
@@ -268,10 +268,10 @@ export default {
                     }
                 ],
                 grid: {
-                    left: '100',
-                    right: '100',
-                    bottom: '45',
-                    top: '60'
+                    left: '13%',
+                    right: '13%',
+                    bottom: '10%',
+                    top: '15%'
                 }
             },
             prices: {},
@@ -428,10 +428,11 @@ export default {
     }
     .chart{
         height:210px;
+        width:375px;
         padding: 0 15px;
         .echarts{
-            width:100%!important;
-            height:100%!important;
+            width:345px!important;
+            height:210px!important;
         }
     }
     .chartDesc{
