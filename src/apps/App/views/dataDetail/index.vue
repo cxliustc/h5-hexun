@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="chart">
-                        <chart width='100%' id="canvas" :options="polar"></chart>
+                        <chart id="canvas" :options="polar"></chart>
                     </div>
                     <div class="chartDesc clearfix">
                         <i class='blue'></i>
@@ -134,6 +134,7 @@
                 </li>
             </ul>
         </scroll>
+        <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a>
     </div>
 </template>
 <script>
@@ -268,10 +269,10 @@ export default {
                     }
                 ],
                 grid: {
-                    left: '100',
-                    right: '100',
-                    bottom: '45',
-                    top: '60'
+                    left: '13%',
+                    right: '13%',
+                    bottom: '10%',
+                    top: '15%'
                 }
             },
             prices: {},
@@ -428,10 +429,11 @@ export default {
     }
     .chart{
         height:210px;
+        width:375px;
         padding: 0 15px;
         .echarts{
-            width:100%!important;
-            height:100%!important;
+            width:345px!important;
+            height:210px!important;
         }
     }
     .chartDesc{
@@ -549,4 +551,15 @@ export default {
     }
     
 }
+.CustomerService{
+        background:url(../../assets/images/CustomerService.png) no-repeat;
+        height:55px;
+        width:55px;
+        background-size:0.55rem;
+        display: block;
+        position:fixed;
+        bottom:26px;
+        right:16px;
+        z-index:10;
+    }
 </style>
