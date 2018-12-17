@@ -2,6 +2,8 @@
     <div class="wrap" :class='{"overflowH":showMainMask}'>
         <infoHeader :is-dynamicname='isDynamicname' :author-name='infoDetail.authorName|strLimit(6)' ></infoHeader>
         <div class="infoDetailWrapper" @scroll="modifyTitle($event)" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
+            <!-- 环信客服 -->
+            <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a>
             <!-- 文章遮罩 -->
             <div class="mainMask" v-show="showMainMask" @click="getAllDetail()">
                 <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>
@@ -9,6 +11,9 @@
             <!-- 验证码弹出层 -->
             <div class='VerificationCodeWrap' v-show="showBomb">
                 <div class="VerificationCodeContent">
+                    <div>
+                        <input type="text" class="userBox" v-model='userName' @input='userName=userName.slice(0, 20)' placeholder="请输入姓名">
+                    </div>
                     <div>
                         <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号">
                     </div>
@@ -138,7 +143,7 @@
 <script>
 import apis from '@/apps/App/apis';
 import { getTime, ls } from 'UTILS/utils';
-import { isPhone } from 'UTILS/StringUtil';
+import { isPhone, isName } from 'UTILS/StringUtil';
 import chart from 'vue-echarts';
 import { setTimeout } from 'timers';
 import infoHeader from '../../components/infoHeader/infoHeader';
@@ -152,6 +157,7 @@ export default {
             errorImg: import('../../assets/images/user-default-blue.png'),
             phoneNum: '', // 电话号码
             codeNum: '', // 验证码
+            userName: '', // 用户姓名
             isGetCode: false, // 验证码是否发送
             CountDown: 60, // 倒计时
             showMainMask: true, // 文章遮罩
@@ -439,27 +445,37 @@ export default {
             let params = {
                 user: {
                     mobile: this.phoneNum,
-                    code: this.codeNum
+                    code: this.codeNum,
+                    username: this.userName
                 }
             };
             let expires = new Date();
             expires = new Date((expires.getFullYear() + 50).toString());
             if (isPhone(this.phoneNum)) {
-                apis.info.submitCode(params).then((data) => {
-                    data = data.body;
-                    if (data.success) {
-                        this.showMainMask = false;
-                        this.showBomb = false;
-                        ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
-                    } else {
-                        this.$vux.toast.show({
-                            text: '验证码错误',
-                            type: 'text',
-                            width: '2rem',
-                            position: 'bottom'
-                        });
-                    }
-                });
+                if (this.userName.length >= 2 && isName(this.userName)) {
+                    apis.info.submitCode(params).then((data) => {
+                        data = data.body;
+                        if (data.success) {
+                            this.showMainMask = false;
+                            this.showBomb = false;
+                            ls.setCookie('HX_AUTH_CHECK', 'checked', expires);
+                        } else {
+                            this.$vux.toast.show({
+                                text: '验证码错误',
+                                type: 'text',
+                                width: '2rem',
+                                position: 'bottom'
+                            });
+                        }
+                    });
+                } else {
+                    this.$vux.toast.show({
+                        text: '请正确姓名',
+                        type: 'text',
+                        width: '2rem',
+                        position: 'bottom'
+                    });
+                }
             } else {
                 this.$vux.toast.show({
                     text: '请输入正确手机号',
@@ -525,6 +541,17 @@ export default {
     background:#F2F2F2;
     margin-top:44px;
     padding-bottom:0.44rem;
+    .CustomerService{
+        background:url(../../assets/images/CustomerService.png) no-repeat;
+        height:55px;
+        width:55px;
+        background-size:0.55rem;
+        display: block;
+        position:fixed;
+        bottom:26px;
+        right:16px;
+        z-index:10;
+    }
     .mainMask{
         height:100px;
         width:100%;
@@ -577,14 +604,13 @@ export default {
         }
         .VerificationCodeContent{
             position: absolute;
-            height:229px;
             width:287px;
             background: #FFFFFF;
             border: 1px solid #E2E2E2;
             border-radius: 8px;
             top:50%;
             left:50%;
-            margin-top:-114.5px;
+            margin-top:-134.5px;
             margin-left:-143.5px;
             padding:34px 0 31px 28px;
             z-index:6;
@@ -619,7 +645,7 @@ export default {
                 font-size:14px;
                 padding:8px 14px;
                 margin-bottom:26px;
-                &.phoneBox{
+                &.phoneBox, &.userBox{
                     width: 230px;
                 }
                 &.codeBox{
