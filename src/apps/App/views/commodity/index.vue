@@ -148,13 +148,16 @@ export default {
             this.init();
         }
     },
+    // 在钩子函数里调用渲染页面的方法
     created () {
         this.init();
     },
+    // 在钩子函数里调用刷新滑动组件的方法
     mounted () {
         let ref = this.$refs;
         setTimeout(function () { ref.scroll.refresh(); }, 300);
     },
+    // 在钩子函数里调用刷新滑动组件的方法
     updated () {
         let ref = this.$refs;
         setTimeout(function () { ref.scroll.refresh(); }, 300);
@@ -266,7 +269,7 @@ export default {
                                         color: #2EBA80;
                                     }
                                     &.color2 {
-                                        color: #D0D0D0;
+                                        color: #6A6A6A;
                                     }
                                     &.color3 {
                                         color: #EE5050;
@@ -294,7 +297,7 @@ export default {
                                             color: #2EBA80!important;
                                         }
                                         &.color4 {
-                                            color: #D0D0D0!important;
+                                            color: #6A6A6A!important;
                                         }
                                     }
                                     span:nth-child(1) {
