@@ -6,6 +6,14 @@ export function isPhone (phoneNum) {
         return true;
     }
 }
+export function isName (Name) {
+    let iName = /^[a-zA-Z\u4e00-\u9fa5]+$/;
+    if (!iName.test(Name)) {
+        return false;
+    } else {
+        return true;
+    }
+}
 export function isNumber (Num) {
     let phone = /^[0-9]*$/;
     if (!phone.test(Num)) {
