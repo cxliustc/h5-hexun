@@ -513,7 +513,7 @@ export default {
     }
 };
 </script>
-<style lang="less" scoped>
+<style lang="less">
 .clear {
     clear: both;
 }
@@ -553,22 +553,24 @@ export default {
         z-index:10;
     }
     .mainMask{
-        height:100px;
+        height:calc(100% - 0.44rem);
         width:100%;
         border-bottom:0.3rem solid #fff;
         background:url(../../assets/images/info/maskMain.png) repeat-x bottom;
-        background-size:1px 1rem;
+        background-size:1px 1.3rem;
         position: fixed;
-        bottom: 0;
+        top: 44px;
         left: 0;
         text-align: center;
         z-index:3;
         span{
             font-size:12px;
             color:#EE5050;
-            position: relative;
-            top:38px;
+            position: absolute;
+            bottom:38px;
             letter-spacing:0.15em;
+            width: 100%;
+            left: 0;
         }
     }
     .VerificationCodeWrap{
@@ -860,6 +862,7 @@ export default {
                 color: #393939;
                 line-height: 24px;
                 letter-spacing: 1.3px;
+                overflow: hidden;
                 img {
                     width: 100% !important;
                     height: auto !important;

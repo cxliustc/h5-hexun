@@ -18,7 +18,7 @@ Vue.use(install);
 let URL_TABLES;
 
 // 用来处理不同环境下的请求url
-export function getUrl (url, type = 'test') {
+export function getUrl (url, type = 'pre') {
     if (!isPrd()) {
         if (judeType(url, '[object Object]')) {
             const {mockUrl, mock, url} = url;
