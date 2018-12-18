@@ -470,7 +470,7 @@ export default {
                     });
                 } else {
                     this.$vux.toast.show({
-                        text: '请正确姓名',
+                        text: '请输入正确姓名',
                         type: 'text',
                         width: '2rem',
                         position: 'bottom'
