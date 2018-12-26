@@ -3,7 +3,7 @@
         <!-- <infoHeader :is-dynamicname='isDynamicname' :author-name='infoDetail.authorName|strLimit(6)' ></infoHeader> -->
         <div class="infoDetailWrapper" @scroll="modifyTitle($event)" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
             <!-- 环信客服 -->
-            <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a>
+            <!-- <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a> -->
             <!-- 文章遮罩 -->
             <div class="mainMask" v-show="showMainMask" @click="getAllDetail()">
                 <span>提示:本内容由百联大宗提供,请验证手机号后获取全文</span>

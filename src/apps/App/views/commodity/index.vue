@@ -16,13 +16,15 @@
                             <p><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
                         </li>
                     </ul>
-                    <ul id="stockIndex1" v-if='type_flag === "xcx"'>
-                        <li v-for="(item, index) in stockindexlist" :key='index' @click="stock()">
-                            <p>{{item.stockIndexName}}</p>
-                            <p :class='[{greenColor: item.stockIndexColor == -1 ? true : false}, {redColor: item.stockIndexColor == 1 ? true : false}]'>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
-                            <p :class='[{greenColor: item.stockIndexColor == -1 ? true : false}, {redColor: item.stockIndexColor == 1 ? true : false}]'><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
-                        </li>
-                    </ul>
+                    <div id="stockIndex1">
+                        <ul v-if='type_flag === "xcx"'>
+                            <li v-for="(item, index) in stockindexlist" :key='index' @click="stock()">
+                                <p>{{item.stockIndexName}}</p>
+                                <p :class='[{greenColor: item.stockIndexColor == -1 ? true : false}, {redColor: item.stockIndexColor == 1 ? true : false}]'>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
+                                <p :class='[{greenColor: item.stockIndexColor == -1 ? true : false}, {redColor: item.stockIndexColor == 1 ? true : false}]'><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="bodyBox" v-for="(item, index) in classifylist" :key='index'>
                         <div class="headline" @click="switchFn(item)"><i :class='{arrow: item.active}'></i>{{item.goodsCategoryName}}</div>
                         <div :class="['contentBox', {'auto': item.active}]" :style="{'max-height': item.maxHeight}">
@@ -249,41 +251,44 @@ export default {
             }
         }
         #stockIndex1 {
-            width: 344px;
-            height: 81px;
-            margin: 13px 15px 15px 16px;
-            display: flex;
-            justify-content: space-between;
-            background: #FFFFFF;
-            box-shadow: 0 2px 7px 0 #E7E7E7;
-            border-radius: 5px;
-            li {
-                flex: 1;
-                p:nth-child(1) {
-                    font-size: 12px;
-                    color: #333333;
-                    text-align: center;
-                    margin-top: 11px;
-                }
-                p:nth-child(2) {
-                    font-size: 16px;
-                    color: #333333;
-                    text-align: center;
-                    margin-top: 6px;
-                }
-                p:nth-child(3) {
-                    font-size: 10px;
-                    color: #333333;
-                    text-align: center;
-                    span:nth-child(1) {
-                        margin-right: 3px;
+            width: 100%;
+            height: 114px;
+            padding: 13px 15px 15px 17px;
+            ul{
+                display: flex;
+                justify-content: space-between;
+                background: #FFFFFF;
+                box-shadow: 0 2px 7px 0 #E7E7E7;
+                border-radius: 5px;
+                li {
+                    flex: 1;
+                    p:nth-child(1) {
+                        font-size: 12px;
+                        color: #333333;
+                        text-align: center;
+                        margin-top: 11px;
                     }
-                }
-                .greenColor {
-                    color: #2EBA80 !important;
-                }
-                .redColor {
-                    color: #EE5050 !important;
+                    p:nth-child(2) {
+                        font-size: 16px;
+                        color: #333333;
+                        text-align: center;
+                        margin-top: 6px;
+                    }
+                    p:nth-child(3) {
+                        font-size: 10px;
+                        color: #333333;
+                        text-align: center;
+                        margin-bottom: 11px;
+                        span:nth-child(1) {
+                            margin-right: 3px;
+                        }
+                    }
+                    .greenColor {
+                        color: #2EBA80 !important;
+                    }
+                    .redColor {
+                        color: #EE5050 !important;
+                    }
                 }
             }
         }

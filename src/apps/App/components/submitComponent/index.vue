@@ -7,7 +7,7 @@
                     <input type="text" class="userBox" v-model='userName' @input='userName=userName.slice(0, 20)' placeholder="请输入姓名">
                 </div>
                 <div>
-                    <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号">
+                    <input type="tel" class="phoneBox" v-model='phoneNum' @input='phoneNum=phoneNum.replace(/[^\d\.]/g,"")' placeholder="请输入手机号" maxlength="11">
                 </div>
                 <div>
                     <input type="text" class="codeBox" v-model='codeNum' @input='codeNum=codeNum.replace(/[^\d\.]/g,"")' placeholder="请输入验证码">
@@ -108,7 +108,7 @@ export default {
                     });
                 } else {
                     this.$vux.toast.show({
-                        text: '请输入正确姓名',
+                        text: '请输入姓名,2-20个中英文字符',
                         type: 'text',
                         width: '2rem',
                         position: 'bottom'

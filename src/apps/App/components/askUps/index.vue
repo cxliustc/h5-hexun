@@ -87,6 +87,7 @@ export default {
             li{
                 height: 24px;
                 line-height: 24px;
+                overflow: hidden;
             }
         }
         .noTransition{
