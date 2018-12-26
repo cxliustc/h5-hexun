@@ -1,6 +1,6 @@
 <template>
     <div class="wrap" :class='{"overflowH":showMainMask}'>
-        <infoHeader :is-dynamicname='isDynamicname' :author-name='infoDetail.authorName|strLimit(6)' ></infoHeader>
+        <!-- <infoHeader :is-dynamicname='isDynamicname' :author-name='infoDetail.authorName|strLimit(6)' ></infoHeader> -->
         <div class="infoDetailWrapper" @scroll="modifyTitle($event)" :class='{"overflowH":showMainMask}' v-cloak id="infoDetailBox">
             <!-- 环信客服 -->
             <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a>
@@ -85,6 +85,13 @@
                     <span class='declare' v-if="infoDetail.isShowOrigin === '1'">来源：{{infoDetail.ext2}}</span>
                     <span class='declare' v-if="infoDetail.isShowDisclaimer === '1'">免责声明：本文非百联大宗原创，以上仅代表作者个人观点</span>
                     <span class='declare' v-if="infoDetail.isShowCopyright === '1'">版权声明：如需转载，请注明来自“百联大宗”</span>
+                    <!-- 对话基石大咖 -->
+                    <div class='infoRecommendation upsContent'>
+                        <div class="imgUps">
+                            <img :src="imgUrl" alt="">
+                        </div>
+                        <div class='introduce'>识别上方二维码，立即对话基石大咖</div>
+                    </div>
                 </div>
                 <!-- 相关推荐 -->
                 <div class='infoRecommendation'>
@@ -147,6 +154,7 @@ import { isPhone, isName } from 'UTILS/StringUtil';
 import chart from 'vue-echarts';
 import { setTimeout } from 'timers';
 import infoHeader from '../../components/infoHeader/infoHeader';
+import erweima from '../../assets/images/erwema.png';
 export default {
     name: 'infoDetail',
     data () {
@@ -254,7 +262,8 @@ export default {
                         data: []
                     }
                 ]
-            }
+            },
+            imgUrl: erweima
         };
     },
     components: {
@@ -539,7 +548,7 @@ export default {
     -webkit-text-size-adjust: none;
     -webkit-overflow-scrolling: touch;
     background:#F2F2F2;
-    margin-top:44px;
+    // margin-top:44px;
     padding-bottom:0.44rem;
     .CustomerService{
         background:url(../../assets/images/CustomerService.png) no-repeat;
@@ -906,6 +915,15 @@ export default {
                 display: inline-block;
                 margin-right: 10px;
                 margin-top: 12px;
+            }
+            .upsContent{
+                .recommedationTitle{
+                    padding: 0 0;
+                }
+                .introduce{
+                    color: #989898;
+                    text-align: center;
+                }
             }
         }
         .author_like {

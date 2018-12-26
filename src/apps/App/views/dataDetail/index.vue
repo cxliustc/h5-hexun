@@ -1,5 +1,12 @@
 <template>
     <div class="dataDetail">
+        <div class="header">
+            <span>乙二醇</span>
+            <div>
+                <span @click='getIntroduce()'></span>
+                <span @click='getQrCode()'></span>
+            </div>
+        </div>
         <scroll
         :data="infoList"
         :scrollbar="true"
@@ -134,19 +141,30 @@
                 </li>
             </ul>
         </scroll>
-        <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a>
+        <!-- <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417" class="CustomerService" v-show='!showMainMask'></a> -->
+        <askUps :askList='askList' v-on:askUpsFn='askUpsFn'/>
+        <submitComponent :showBomb='showBomb' v-on:closeBomb='closeBomb' :detailId='detailId'/>
+        <popPicture :showBomb='showBombPicture' v-on:closeBomb='closeBombPicture'>
+            <img :src="imgUrl" alt="">
+        </popPicture>
     </div>
 </template>
 <script>
 import Scroll from 'COMPONENTS/scroll';
 import NoPriceResult from '../../../../components/noPriceResult';
+import askUps from '../../components/askUps';
+import submitComponent from '../../components/submitComponent';
+import popPicture from '../../components/popPicture';
 import mixin from './mixin';
 import chart from 'vue-echarts';
 import apis from '../../apis/index';
+import { ls } from 'UTILS/utils';
+import hexunPop1 from '../../assets/images/hexun_pop1.png';
+import hexunPop2 from '../../assets/images/hexun_pop2.png';
 export default {
     mixins: [mixin],
     components: {
-        chart, Scroll, NoPriceResult
+        chart, Scroll, NoPriceResult, askUps, submitComponent, popPicture
     },
     name: 'dataDetail',
     data () {
@@ -277,7 +295,12 @@ export default {
             },
             prices: {},
             count: 2,
-            name: ''
+            name: '',
+            askList: [],
+            detailId: '',
+            showBomb: false,
+            showBombPicture: false,
+            imgUrl: ''
         };
     },
     created () {
@@ -287,8 +310,28 @@ export default {
         this.getDatas(id);
         this.setPolarFontSize();
         apis.data.getMaidian();
+        apis.commodity.queryPage().then(data => {
+            data = data.body;
+            if (data.success) {
+                this.askList = data.data;
+            }
+        });
     },
     methods: {
+        closeBomb () {
+            this.showBomb = false;
+        },
+        getIntroduce () {
+            this.imgUrl = hexunPop1;
+            this.showBombPicture = true;
+        },
+        getQrCode () {
+            this.imgUrl = hexunPop2;
+            this.showBombPicture = true;
+        },
+        closeBombPicture () {
+            this.showBombPicture = false;
+        },
         // 下拉刷新
         onPullingDown () {
             apis.data.getList({
@@ -367,6 +410,17 @@ export default {
                 name: 'infoDetail',
                 params: {informationId: item}
             });
+        },
+        askUpsFn (id) {
+            this.detailId = id;
+            if (ls.getCookie('HX_AUTH_CHECK') === 'checked') {
+                this.$router.push({
+                    name: 'infoDetail',
+                    params: {informationId: this.detailId}
+                });
+            } else {
+                this.showBomb = true;
+            }
         }
     }
 };
@@ -374,6 +428,41 @@ export default {
 <style lang="less" scoped>
 @import '../../../../common/variable.less';
 .dataDetail{
+    .list-wrapper{
+        top: 60px;
+    }
+    .header{
+        width: 100%;
+        height: 60px;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 19px;
+        span:nth-child(1) {
+            font-size: 17px;
+            color: #333333;
+        }
+        div{
+            display: flex;
+            align-items: center;
+            span:nth-child(1) {
+                display: inline-block;
+                width: 22px;
+                height: 22px;
+                background: url(../../assets/images/hexun_wh.png) no-repeat 0px 0px;
+                background-size: cover;
+            }
+            span:nth-child(2) {
+                display: inline-block;
+                width: 22px;
+                height: 22px;
+                margin-left: 22px;
+                background: url(../../assets/images/hexun_erwm.png) no-repeat 0px 0px;
+                background-size: cover;
+            }
+        }
+    }
     .datas{
         .title{
             padding: 0 18px 0 21px;

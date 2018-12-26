@@ -9,11 +9,18 @@
             >
             <div slot="list">
                 <div id="box">
-                    <ul id="stockIndex">
+                    <ul id="stockIndex" v-if='type_flag === "app"'>
                         <li v-for="(item, index) in stockindexlist" :key='index' :class='[{backgroundcolor1: item.stockIndexColor == -1 ? true : false}, {backgroundcolor2: item.stockIndexColor == 0 ? true : false}]' @click="stock()">
                             <p>{{item.stockIndexName}}</p>
                             <p>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
                             <p><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
+                        </li>
+                    </ul>
+                    <ul id="stockIndex1" v-if='type_flag === "xcx"'>
+                        <li v-for="(item, index) in stockindexlist" :key='index' @click="stock()">
+                            <p>{{item.stockIndexName}}</p>
+                            <p :class='[{greenColor: item.stockIndexColor == -1 ? true : false}, {redColor: item.stockIndexColor == 1 ? true : false}]'>{{item.stockIndexPrice === '' ? '--' : item.stockIndexPrice}}</p>
+                            <p :class='[{greenColor: item.stockIndexColor == -1 ? true : false}, {redColor: item.stockIndexColor == 1 ? true : false}]'><span>{{item.stockIndexChange === '' ? '--' : item.stockIndexChange}}</span><span>{{item.stockIndexRate === '' ? '--' : item.stockIndexRate}}</span></p>
                         </li>
                     </ul>
                     <div class="bodyBox" v-for="(item, index) in classifylist" :key='index'>
@@ -47,14 +54,19 @@
                 </div>
             </div>
         </scroll>
-        <div class="service">
+        <!-- <div class="service">
             <a href="https://kefu.easemob.com/webim/im.html?tenantId=40417"></a>
-        </div>
+        </div> -->
+        <askUps :askList='askList' v-on:askUpsFn='askUpsFn'/>
+        <submitComponent :showBomb='showBomb' v-on:closeBomb='closeBomb' :detailId='detailId'/>
     </div>
 </template>
 <script>
 import apis from '@/apps/App/apis';
 import Scroll from 'COMPONENTS/scroll';
+import askUps from '../../components/askUps';
+import { ls } from 'UTILS/utils';
+import submitComponent from '../../components/submitComponent';
 export default {
     name: 'commodity',
     data () {
@@ -77,13 +89,33 @@ export default {
                 lastPrice: '',
                 riseFallRate: '',
                 upsDownsFlag: null
-            }]
+            }],
+            showBomb: false,
+            detailId: '',
+            askList: [],
+            type_flag: 'xcx'
         };
     },
     components: {
-        Scroll
+        Scroll,
+        askUps,
+        submitComponent
     },
     methods: {
+        closeBomb () {
+            this.showBomb = false;
+        },
+        askUpsFn (id) {
+            this.detailId = id;
+            if (ls.getCookie('HX_AUTH_CHECK') === 'checked') {
+                this.$router.push({
+                    name: 'infoDetail',
+                    params: {informationId: this.detailId}
+                });
+            } else {
+                this.showBomb = true;
+            }
+        },
         // 点击列表选项
         switchFn: function (item, patientia) {
             this.classifylist.forEach((item) => {
@@ -125,6 +157,13 @@ export default {
         },
         // 渲染页面
         init: function () {
+            // 推荐新闻
+            apis.commodity.queryPage().then(data => {
+                data = data.body;
+                if (data.success) {
+                    this.askList = data.data;
+                }
+            });
             // 股指渲染
             apis.commodity.stockindexdata().then((data) => {
                 data = data.body;
@@ -156,6 +195,8 @@ export default {
     // 在钩子函数里调用渲染页面的方法
     created () {
         this.init();
+        let type = this.$route.query.type;
+        this.type_flag = (type && type === '1') ? 'app' : 'xcx';
     },
     // 在钩子函数里调用刷新滑动组件的方法
     mounted () {
@@ -204,6 +245,45 @@ export default {
                     span:nth-child(1) {
                         margin-right: 3px;
                     }
+                }
+            }
+        }
+        #stockIndex1 {
+            width: 344px;
+            height: 81px;
+            margin: 13px 15px 15px 16px;
+            display: flex;
+            justify-content: space-between;
+            background: #FFFFFF;
+            box-shadow: 0 2px 7px 0 #E7E7E7;
+            border-radius: 5px;
+            li {
+                flex: 1;
+                p:nth-child(1) {
+                    font-size: 12px;
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 11px;
+                }
+                p:nth-child(2) {
+                    font-size: 16px;
+                    color: #333333;
+                    text-align: center;
+                    margin-top: 6px;
+                }
+                p:nth-child(3) {
+                    font-size: 10px;
+                    color: #333333;
+                    text-align: center;
+                    span:nth-child(1) {
+                        margin-right: 3px;
+                    }
+                }
+                .greenColor {
+                    color: #2EBA80 !important;
+                }
+                .redColor {
+                    color: #EE5050 !important;
                 }
             }
         }
