@@ -1,13 +1,12 @@
 // 所有业务线的共同配置文件
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Vuex from 'vuex';
+// import Vuex from 'vuex';
 
 import createLogger from 'vuex/dist/logger';
 import App from './index.vue';
 // 加载自定义组件
-import 'COMPONENTS';
-
+// import 'COMPONENTS';
 import httpConfig from 'UTILS/httpConfig';
 import 'UTILS/filters';
 import {isPrd, judeType, getIn} from 'UTILS/utils';
@@ -20,12 +19,12 @@ import '../common/index.less';
 import '../assets/icon/iconfont.css';
 export let Router = null;
 
-Vue.mixin({
-    methods: {
-        getIn
-    }
-});
-Vue.use(Vuex);
+// Vue.mixin({
+//     methods: {
+//         getIn
+//     }
+// });
+// Vue.use(Vuex);
 // 开发环境下的vuex的logger
 const logger = createLogger({
     collapsed: false,
@@ -44,49 +43,48 @@ export default function ({router = {}, stores, urlTables}) {
     Vue.use(VueRouter);
 
     Router = new VueRouter({
-        mode: 'history',
-        base: 'h5-hexun',
+        mode: 'hash',
         routes: router.routes
     });
 
-    store = new Vuex.Store({
-        modules: {
-            ...stores
-        },
-        strict: !isPrd(),
-        plugins: isPrd() ? [] : [logger]
-    });
+    // store = new Vuex.Store({
+    //     modules: {
+    //         ...stores
+    //     },
+    //     strict: !isPrd(),
+    //     plugins: isPrd() ? [] : [logger]
+    // });
 
     // window.router = Router;
 
-    Router.beforeEach((to, from, next) => {
-        clearRequest();
-        // store.commit('system/resetLoadingStatus');
-        store.commit('system/updateLoadingStatus', true);
-        next();
-    });
+    // Router.beforeEach((to, from, next) => {
+    //     clearRequest();
+    //     // store.commit('system/resetLoadingStatus');
+    //     store.commit('system/updateLoadingStatus', true);
+    //     next();
+    // });
 
-    Router.afterEach((to) => {
-        store.commit('system/updateLoadingStatus', false);
-    });
+    // Router.afterEach((to) => {
+    //     store.commit('system/updateLoadingStatus', false);
+    // });
 
-    if (router.beforeEach) {
-        router.beforeEach.forEach(f => {
-            if (judeType(f, '[object Function]')) {
-                Router.beforeEach(f);
-            }
-        });
-    }
+    // if (router.beforeEach) {
+    //     router.beforeEach.forEach(f => {
+    //         if (judeType(f, '[object Function]')) {
+    //             Router.beforeEach(f);
+    //         }
+    //     });
+    // }
 
-    App.store = store;
+    // App.store = store;
 
     // 将router放在vux中进行管理
-    sync(store, Router, {moduleName: 'RouteModule'});
+    // sync(store, Router, {moduleName: 'RouteModule'});
 
     httpConfig(urlTables);
     new Vue({
         router: Router,
         render: c => c(App)
     }).$mount('#root');
-    return store;
+    // return store;
 }

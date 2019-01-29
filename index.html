@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
-    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.0.8/lib/theme-chalk/index.css">
+    <!-- <link rel="stylesheet" href="https://unpkg.com/element-ui@2.0.8/lib/theme-chalk/index.css"> -->
+    <link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
     <script src="https://as.alipayobjects.com/g/component/fastclick/1.0.6/fastclick.js"></script>
-    <script>
+    <!-- <script>
       if (!window.console || !window.console.log) {
           window.console = {
               log () {}
@@ -19,28 +20,7 @@
       if(!window.Promise) {
         document.writeln('<script src="https://as.alipayobjects.com/g/component/es6-promise/3.2.2/es6-promise.min.js"'+'>'+'<'+'/'+'script>');
       }
-    </script>
-    <script>
-      (function (doc, win) {
-        var docEl = doc.documentElement
-        var resizeEvent = 'orientationchange' in window ? 'orientationchange' : 'resize'
-        win.initialScale = win.navigator.appVersion.match(/iphone/gi)
-        ? 1 / win.devicePixelRatio
-        : 1;
-        doc.querySelector('meta[name="viewport"]').content = 'initial-scale=' + initialScale + ', maximum-scale=' + initialScale + ', minimum-scale=' + initialScale + ', user-scalable=no'
-
-        var recale = function () {
-          var clientWidth = docEl.getBoundingClientRect().width
-          docEl.style.fontSize = clientWidth / 375 * 100 + 'px'
-        }
-
-        recale()
-
-        win.addEventListener(resizeEvent, recale, false)
-        win.addEventListener('pageShow', recale, false)
-        win.addEventListener('DOMContentLoaded', recale, false)
-      })(document, window)
-    </script>
+    </script> -->
     <script>
       var _hmt = _hmt || [];
       (function() {
