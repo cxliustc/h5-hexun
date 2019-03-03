@@ -31,9 +31,9 @@ export default [
         path: '/login',
         component: Login
     }, {
-        path: '/hexiao',
+        path: '/checkLogin',
         component: Check,
-        name: 'check'
+        name: 'checkLogin'
     }, {
         path: '/order',
         component: Order,

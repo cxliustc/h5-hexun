@@ -3,91 +3,62 @@
     <div class="order-view">
         <div class="title-header">
             <div class="left-image">
-                <img src="" alt="">
+                <img :src="getIn(['faceUrl'], productInfo) || '/static/images/logo.jpg'" alt="">
             </div>
             <div class="right-content">
                 <div class="title">
-                    暴击年末脏衣服我承包-3折仅49元抢UCC国际衣套餐-义务专车接送包宝宝啊喝点酒卡的进口量
+                    {{getIn(['goodsName'], productInfo)}}
                 </div>
                 <div class="date">
-                    有效期至：2019-06-05
+                    可使用日期：2019.03.15 - 2019.09.19
+                </div>
+                <div class="date">
+                    预约日期：2019.03.03 - 2019.03.15
                 </div>
             </div>
         </div>
-        <div class="gap"></div>
-        <div class="order-number-container">
-            <div class="order-number">
-                <div class="title">
-                    预约数量
-                </div>
-                <div class="options">
-                    <div @click="change(-1)">-</div>
-                    <div>{{number}}</div>
-                    <div @click="change(1)">+</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="order-store">
-            <div class="title">
-                预约门店
-            </div>
-            <div class="address">
-                <div class="show-address">金沙店&nbsp&gt</div>
-                <div class="address-content">陕西省西安市碑林区含光北路</div>
-            </div>
-        </div>
-        <div class="gap"></div>
-        <div class="order-date">
-            <div class="up-title">
-                <div class="title">预约日期</div>
-                <div class="choose-button">请选择你要预约的时间</div>
-            </div>
-            <div class="date">
-                <date />
-            </div>
-        </div>
-        <div class="begin-time-container">
-            <div class="begin-time">
-                <div class="title">
-                    开始时间
-                </div>
-                <div class="time">
-                    12:00&nbsp&gt
-                </div>
-            </div>
-        </div>
-        <div class="over-time">
-            <div class="title">
-                结束时间
-            </div>
-            <div class="time">
-                15:00&nbsp&gt
-            </div>
-        </div>
-        <div class="gap"></div>
         <div class="name-container">
             <div class="name">
-                <div class="title">姓名</div>
-                <div class="person">东东&nbsp&gt</div>
+                <div class="title">姓名：</div>
+                <div class="person">
+                    <input type="text" placeholder="请输入姓名" v-model="name">
+                </div>
             </div>
         </div>
         <div class="phone-container">
             <div class="phone">
-                <div class="title">电话</div>
-                <div class="phone-number">17868885336&nbsp&gt</div>
+                <div class="title">电话：</div>
+                <div class="phone-number">
+                    <input type="phone" placeholder="请输入手机号" v-model="phoneNumber">
+                </div>
             </div>
         </div>
+        <div class="gap"></div>
         <div class="address">
-            <div class="title">地址</div>
+            <div class="title">地址：</div>
             <div class="person-address">
-                <div class="district">陕西省西安市碑林区&nbsp&gt</div>
-                <div class="address-content">西安创新设计中心306</div>
+                <div class="district" id="chose">省/市/区</div>
+            </div>
+        </div>
+        <div class="address-content">
+            <div class="address-content-info">
+                <div class="title">详细地址：</div>
+                <div class="input-address">
+                    <textarea 
+                        name="" 
+                        id="" 
+                        cols="30" 
+                        rows="4"
+                        placeholder="请输入街道门牌、楼层房间号等信息"
+                        v-model="address"
+                    >
+                    </textarea>
+                </div>
             </div>
         </div>
         <div class="note"></div>
         <div class="submit-container">
-            <div class="submit">
+            <div class="submit" @click="submit">
                 提交预约
             </div>
         </div>
@@ -96,6 +67,10 @@
 </template>
 <script>
 import Date from './date'
+import {getIn} from 'UTILS/utils.js'
+import initCitySelect from '../../libs/city.js'
+import axios from 'axios'
+import {Toast, MessageBox} from 'mint-ui'
 // import BScroll from 'better-scroll' 
 export default {
     components: {
@@ -103,15 +78,60 @@ export default {
     },
     data () {
         return {
-            number: 0
+            productInfo: {},
+            name: '',
+            phoneNumber: '',
+            area: '',
+            address: ''
         }
     },
+    mounted () {
+        this.productInfo = JSON.parse(window.localStorage.productInfo || '{}')
+        initCitySelect('chose', (area) => {
+            this.area = area
+            console.log(area)
+        })
+    },
     methods: {
-        change (number) {
-            if (this.number === 0 && number === -1) {
+        getIn,
+        submit () {
+            if (!(/^1[34578]\d{9}$/.test(this.phoneNumber))) {
+                Toast('手机号码格式错误')
                 return
             }
-            this.number = this.number + number
+            if (!this.name) {
+                Toast('请输入姓名')
+                return
+            }
+            if (!this.phoneNumber) {
+                Toast('请输入手机号码')
+                return
+            }
+            if (!this.area || !this.address) {
+                Toast('请输入地址')
+                return
+            }
+            axios.post('https://ebusiness.nibaspace.com/commodity/order/code/add', {
+                code: window.localStorage.code,
+                phone: this.phoneNumber,
+                name: this.name,
+                region: this.area,
+                detailedAdress: this.address
+            }).then(res => {
+                if (res.data.result) {
+                    MessageBox({
+                        title: '提示',
+                        message: '成功预约',
+                        showCancelButton: false
+                    }).then(action => {
+                        window.localStorage.productInfo = ''
+                        window.localStorage.code = ''
+                        this.$router.push('checkLogin')
+                    })
+                } else {
+                    Toast(res.data.message)
+                }
+            })
         }
     }
 }
@@ -133,6 +153,7 @@ export default {
     overflow-y: scroll;
 }
 .order-view {
+    overflow-y: scroll;
     .title-header {
         width: 100%;
         display: flex;
@@ -144,7 +165,11 @@ export default {
             // flex: 1;
             height: 172px;
             width: 172px;
-            background-color: red;
+            // background-color: red;
+            img {
+                width: 172px;
+                height: 172px;
+            }
         }
         .right-content {
             flex: 2;
@@ -221,6 +246,24 @@ export default {
         }
         padding-bottom: 21px;
     }
+    .address-content {
+        padding-top: @padding-top-bottom;
+        .address-content-info {
+            .list-common-style;
+            justify-content: flex-start;
+            .title {
+                font-size: 28px;
+                padding-bottom: 12px; 
+            }
+            .input-address {
+                font-size: 28px;
+                textarea {
+                    font-size: 28px;
+                }
+            }
+        }
+        padding-bottom: 21px;
+    }
     .begin-time-container {
         padding: 0 30px;
         .begin-time {
@@ -261,6 +304,7 @@ export default {
         padding-top: @padding-top-bottom;
         .name {
             .list-common-style;
+            justify-content: flex-start;
             color: #373737;
             padding: 0;
             padding-bottom: @padding-top-bottom;
@@ -268,7 +312,9 @@ export default {
                 font-size: 28px;
             }
             .person {
-                font-size: 26px;
+                input {
+                    font-size: 28px;
+                }
             }
             border-bottom: 1px solid #e4e4e4;
         }
@@ -278,6 +324,7 @@ export default {
         padding-top: @padding-top-bottom;
         .phone {
             .list-common-style;
+            justify-content: flex-start;
             padding: 0;
             color: #373737;
             .title {
@@ -285,13 +332,17 @@ export default {
                 padding-bottom: @padding-top-bottom;
             }
             .phone-number {
-                font-size: 26px;
+                font-size: 28px;
+                input {
+                    font-size: 28px;
+                }
             }
             border-bottom: 1px solid #e4e4e4;
         }
     }
     > .address {
         .list-common-style;
+        justify-content: flex-start;
         color: #373737;
         padding-bottom: @padding-top-bottom;
         padding-top: @padding-top-bottom;
@@ -300,15 +351,17 @@ export default {
         }
         .person-address {
             display: flex;
-            font-size: 26px;
+            font-size: 28px;
             flex-direction: column;
             align-items: flex-end;
             .address-content {
+                font-size: 28px;
                 color: #9e9e9e;
             }
         }
     }
     .submit-container {
+        margin-top: 300px;
         padding: 0 30px;
         padding-bottom: 30px;
         .submit {
