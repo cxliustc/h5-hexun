@@ -16,7 +16,7 @@
                                         :class="{
                                             'date-container': true,
                                             selected: index === selected,
-                                            disabled: item.disabled  
+                                            disabled: item.margin === 0
                                         }"
                                     >
                                         <div 
@@ -24,8 +24,8 @@
                                             :class="{
                                                 'background': index !== selected
                                             }"
-                                        >{{item.time}}</div>
-                                        <div class="remain">10/50</div>
+                                        >{{handleTime(item.bookDate)}}</div>
+                                        <div class="remain">{{item.bookedCount + '/' + item.margin}}</div>
                                     </div>
                                 </li>
                             </ul>
@@ -42,87 +42,81 @@
 <script>
 import BScroll from 'better-scroll';
 import {MessageBox} from 'mint-ui'
-const dateList = [{
-    time: '01-29(周二)'
-}, {
-    time: '01-30(周三)'
-}, {
-    time: '01-31(周四)'
-}, {
-    time: '02-01(周五)'
-}, {
-    time: '02-02(周六)'
-}, {
-    time: '02-03(周日)'
-}, {
-    time: '02-04(周一)',
-    disabled: true
-}, {
-    time: '02-05(周二)'
-}, {
-    time: '02-06(周三)'  
-}, {
-    time: '02-07(周四)'
-}, {
-    time: '02-08(周五)',
-    disabled: true
-}, {
-    time: '02-09(周六)'
-}, {
-    time: '02-10(周日)'
-}, {
-    time: '02-11(周一)'
-}, {
-    time: '02-12(周二)',
-    disabled: true
-}, {
-    time: '02-13(周三)',
-    disabled: true
-}, {
-    time: '02-14(周四)'
-}, {
-    time: '02-15(周五)',
-    disabled: true
-}, {
-    time: '02-16(周六)'
-}, {
-    time: '02-17(周日)'
-}, {
-    time: '02-18(周一)',
-    disabled: true
-}, {
-    time: '02-19(周二)'
-}, {
-    time: '02-20(周三)'
-}, {
-    time: '02-21(周四)'
-}, {
-    time: '02-22(周五)'
-}, {
-    time: '02-23(周六)'
-}, {
-    time: '02-24(周日)'
-}, {
-    time: '02-25(周一)'
-}, {
-    time: '02-26(周二)'
-}, {
-    time: '02-27(周三)'
-}]
+import axios from 'axios'
+const dateList =  [
+        {
+            "id": "ca8561ff23724122889316e10c5926c3",
+            "appId": "c899d1e6f3b64a29a7539910755656ce",
+            "goodsId": "f6203ba943824328b5c4a263b04946eb",
+            "bookDate": 1548864000000,
+            "margin": 45,
+            "bookedCount": 0,
+            "delFlag": "0",
+            "createBy": "c899d1e6f3b64a29a7539910755656ce",
+            "createTime": 1548865591000,
+            "updateBy": "c899d1e6f3b64a29a7539910755656ce",
+            "updateTime": 1548865591000
+        },
+        {
+            "id": "8f6653e4bb104984b7ee1b3b779c33c8",
+            "appId": "c899d1e6f3b64a29a7539910755656ce",
+            "goodsId": "f6203ba943824328b5c4a263b04946eb",
+            "bookDate": 1548950400000,
+            "margin": 50,
+            "bookedCount": 0,
+            "delFlag": "0",
+            "createBy": "c899d1e6f3b64a29a7539910755656ce",
+            "createTime": 1548865595000,
+            "updateBy": "c899d1e6f3b64a29a7539910755656ce",
+            "updateTime": 1548865595000
+        },
+        {
+            "id": "c96e889a8d004a8e8cf258a31b7ff66f",
+            "appId": "c899d1e6f3b64a29a7539910755656ce",
+            "goodsId": "f6203ba943824328b5c4a263b04946eb",
+            "bookDate": 1549036800000,
+            "margin": 50,
+            "bookedCount": 50,
+            "delFlag": "0",
+            "createBy": "c899d1e6f3b64a29a7539910755656ce",
+            "createTime": 1548865595000,
+            "updateBy": "c899d1e6f3b64a29a7539910755656ce",
+            "updateTime": 1548865595000
+        }
+]
 
 export default {
     data () {
         return {
-            dateList: dateList,
+            dateList: [],
             selected: -1
         }
     },
+    created () {
+        // debugger
+        axios.post('https://ebusiness.nibaspace.com/commodity/book/room/list/get', {
+            appId: '05bc2c20b8014a2aa0e7538b3d8074a2',
+            goodsId: this.$route.params.id
+        }).then((res) => {
+            // debugger
+            this.dateList = res.data.data
+            setTimeout(() => {
+                this.initScroll()
+            })
+        })
+    },
     methods: {
+        handleTime (time) {
+            // debugger
+            let date = new window.Date(time)
+            let month = date.getMonth() + 1 >= 10 ? date.getMonth() + 1 : '0' + (date.getMonth() + 1)
+            let day = date.getDate() >= 10 ? date.getDate() : '0' + date.getDate() 
+            return month + '-' + day
+        },
         clickItem (item, index) {
-            debugger
-            if (item.disabled) return
+            if (item.margin === 0) return
             this.selected = index
-            window.localStorage.time = item.time
+            window.sessionStorage[this.$route.params.id] = item.bookDate
         },
         initScroll () {
             this.scroll = new BScroll(this.$refs.wrapper, {
@@ -161,6 +155,7 @@ export default {
         position: absolute;
         height: 100%;
         overflow: hidden;
+        width: 100%;
         .scroll-content {
             position: relative;
             z-index: 1;
